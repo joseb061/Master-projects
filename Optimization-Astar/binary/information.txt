@@ -1,0 +1,5 @@
+This is the AStar algorithm for the routing problem. 
+It has data of a map containing locations points and ways between them.
+The program finds the shortest way from 'Basílica de Santa Maria del Mar (Plaça de Santa Maria)' in Barcelona to the 'Giralda (Calle Mateos Gago)' in Sevilla.
+
+It is made for Joseba Hernández Bravo and Jorge Vicente Puig.

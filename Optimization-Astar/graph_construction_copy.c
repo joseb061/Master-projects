@@ -45,25 +45,23 @@ unsigned nodesearch(long int ident, node l[],int n){
 */
 
 unsigned binarysearch(long int ident, node l[],int n){
-	int first = 0, last = n-1, middle;
-	middle = (first + last)/2;
+    int first = 0, last = n-1, middle;
+    middle = (first + last)/2;
 
-	while(first <= last){
-		if(l[middle].id < ident){
-			first = middle + 1;
-		} else if(l[middle].id == ident){
-			return middle;
-		} else
-		last = middle - 1;
-		middle = (first + last)/2;
-	}
-	if(first > last){
-	   //printf("The node %ld doesn't exist! \n", ident);
+    while(first <= last){
+        if(l[middle].id < ident){
+            first = middle + 1;
+        } else if(l[middle].id == ident){
+            return middle;
+        } else
+        last = middle - 1;
+        middle = (first + last)/2;
+    }
+    if(first > last){
+       //printf("The node %ld doesn't exist! \n", ident);
         return 0;
-	}
-
+    }
 }
-
 
 int binary_writting(node *nodes){
     FILE *fin;
@@ -191,7 +189,6 @@ int main(){
     }
     fclose(data);
     printf("\n The data is closed.\n");
-
 
     printf("\n Number of nodes: %d     Number of ways %d\n", node_num, nways);
 
