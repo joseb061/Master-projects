@@ -1,0 +1,42 @@
+---
+title: "BN_block2"
+author: "Jorge Vicente Puig"
+date: "5/11/2021"
+output: pdf_document
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(gRbase)
+library(gRain)
+
+```
+
+```{r Bayesian Netwok}
+tf<-c("false","true")
+
+node.O <- cptable(~O, values=c(6,4), levels = tf)
+node.T <- cptable(~T, values=c(9,1), levels = tf)
+node.N <- cptable(~N+T, values=c(9,1,2,8), levels = tf)
+node.M <- cptable(~M+O+T, values=c(7,3,4,6,4,6,2,8), levels = tf)
+
+plist <- compileCPT(list(node.O,node.T,node.N,node.M))
+
+Norman.net<-grain(plist)
+
+plot1=plot(Norman.net)
+plot1
+```
+
+
+
+```{r}
+# Nodes of our network
+node.M <- cptable(~M, values=c(2,8), levels = tf)
+node.S <- cptable(~S+M, values=c(8,2,), levels = tf)
+node.B <- cptable(~B+M, values=c(), levels = tf)
+node.C <- cptable(~C+S+B, values=c(7,3,4,6,4,6,2,8), levels = tf)
+node.H <- cptable(~H+B, values=c(7,3,4,6,4,6,2,8), levels = tf)
+```
