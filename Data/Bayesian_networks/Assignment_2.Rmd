@@ -4,39 +4,168 @@ author: "Jorge Vicente Puig"
 date: "5/11/2021"
 output: pdf_document
 ---
-
-
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(gRbase)
 library(gRain)
-
+library(bnlearn)
 ```
 
-```{r Bayesian Netwok}
-tf<-c("false","true")
+### Using gRain, develop the corresponding Bayesian Network and use it to compute P(M = T/H = F) and P(M = F/H = T).
+```{r Bayesian Network}
+# We are working with boolean variables
+tf<-c("true","false")
 
-node.O <- cptable(~O, values=c(6,4), levels = tf)
-node.T <- cptable(~T, values=c(9,1), levels = tf)
-node.N <- cptable(~N+T, values=c(9,1,2,8), levels = tf)
-node.M <- cptable(~M+O+T, values=c(7,3,4,6,4,6,2,8), levels = tf)
-
-plist <- compileCPT(list(node.O,node.T,node.N,node.M))
-
-Norman.net<-grain(plist)
-
-plot1=plot(Norman.net)
-plot1
-```
-
-
-
-```{r}
 # Nodes of our network
 node.M <- cptable(~M, values=c(2,8), levels = tf)
-node.S <- cptable(~S+M, values=c(8,2,), levels = tf)
-node.B <- cptable(~B+M, values=c(), levels = tf)
-node.C <- cptable(~C+S+B, values=c(7,3,4,6,4,6,2,8), levels = tf)
-node.H <- cptable(~H+B, values=c(7,3,4,6,4,6,2,8), levels = tf)
+node.S <- cptable(~S+M, values=c(8,2,2,8), levels = tf)
+node.B <- cptable(~B+M, values=c(2,8,0.5,9.5), levels = tf)
+node.C <- cptable(~C+B+S, values=c(8,2,8,2,8,2,0.5,9.5), levels = tf)
+node.H <- cptable(~H+B, values=c(8,2,6,4), levels = tf)
+
+plist <- compileCPT(list(node.M,node.S,node.B,node.C,node.H))
+
+Network.gr <-grain(plist)
+
+# Computing the probabilities and 
+True_evidence <- matrix("true", nrow = 1, ncol = 1)
+False_evidence <- matrix("false", nrow = 1, ncol = 1)
+
+#  P(M/H = T)
+colnames(True_evidence) <- "H"
+evidence <- as.data.frame(True_evidence)
+predict(Network.gr, response = "M", predictors = "H", newdata = evidence, type = "dist")
+
+# P(M/H = F)
+colnames(False_evidence) <- "H"
+evidence <- as.data.frame(False_evidence)
+predict(Network.gr, response = "M", predictors = "H", newdata = evidence, type = "dist")
 ```
+As we can see we obtain $P(M = T/H = T)=0.2077922$ and $P(M = T/H = F)=0.1875$.
+
+
+### Develop the LS Algorithm to find these two probabilities with R and compare
+the results with previous item
+
+For this question we will use the functions *cpdist* (for sampling) from the package *bnlearn* and *querygrain* from *grain* package.
+```{r Logic Sampling Algorithm}
+set.seed(0)
+Network.fit <- as.bn.fit(Network.gr)
+
+# Case H = true
+samples.cancer <- cpdist(Network.fit, nodes = nodes(Network.fit), evidence = (H=="true"), n = 1000)
+summary(samples.cancer)
+pbLS_Htrue <- table(samples.cancer[,c('M')])
+prop.table(pbLS_Htrue)
+
+# Case H = false
+samples.cancer <- cpdist(Network.fit, nodes = nodes(Network.fit), evidence = (H=="false"), n = 1000)
+summary(samples.cancer)
+pbLS_Hfalse <- table(samples.cancer[,c('M')])
+prop.table(pbLS_Hfalse)
+```
+
+Since we are able to do exact inference we can measure the absolute error:
+```{r Computing absolute errors for LS}
+# Case H = true
+Evidence_true.gr <- setEvidence(Cancer.gr, nodes="H", states = c("true"))
+exactpb_Htrue <- querygrain(Evidence_true.gr, nodes = c("M"), type = "joint")
+error_Htrue <- abs(exactpb_Htrue - prop.table(pbLS_Htrue))
+error_Htrue
+
+# Case H = false
+Evidence_false.gr <- setEvidence(Cancer.gr, nodes="H", states = c("false"))
+exactpb_Hfalse <- querygrain(Evidence_false.gr, nodes = c("M"), type = "joint")
+error_Hfalse <- abs(exactpb_Hfalse - prop.table(pbLS_Hfalse))
+error_Hfalse
+```
+
+
+### Develop the LW Algorithm to find these two probabilities with R and compare
+the results with previous items.
+```{r Likelihood Weighting Algorithm}
+set.seed(0)
+Network.fit <- as.bn.fit(Network.gr)
+# Case H = true
+samples.cancer <- cpdist(Network.fit, nodes = nodes(Network.fit), evidence = list(H="true"), n = 1000, method = "lw")
+summary(samples.cancer)
+pbLW_Htrue <- table(samples.cancer[,c('M')])
+prop.table(pbLW_Htrue)
+
+# Case H = false
+samples.cancer <- cpdist(Network.fit, nodes = nodes(Network.fit), evidence = list(H="false"), n = 1000, method = "lw")
+summary(samples.cancer)
+pbLW_Hfalse <- table(samples.cancer[,c('M')])
+prop.table(pbLW_Hfalse)
+```
+Now we can compute the absolute errors:
+```{r Computing absolute errors for LW}
+# Case H = true
+error_Htrue <- abs(exactpb_Htrue - prop.table(pbLW_Htrue))
+error_Htrue
+
+# Case H = false
+error_Hfalse <- abs(exactpb_Hfalse - prop.table(pbLW_Hfalse))
+error_Hfalse
+```
+
+
+
+### Compute exactly “by hand” P(M = T/H = F), and compare with (a), (b) and (c).
+For computing exactly the value of P(M = T/H = F) we can do an upward propagation:
+```{r}
+# Probabilities knowed
+pb_mt = 0.2
+pb_mf = 0.8
+
+pb_mt_bf = 0.8
+pb_mt_bt = 0.2
+pb_mf_bt = 0.05
+pb_mf_bf = 0.95
+
+
+pb_bt_hf = 0.2
+pb_bf_hf = 0.4
+pb_bt_mt = 0.2
+pb_bf_mt = 0.8
+
+# We want to compute P(M=T|H=F), so we use Bayes Theorem: P(M=T|H=F) = (P(H=F|M=T)*P(M=T))/P(H=F)
+
+# We have to compute first P(H=F|M=T) by the conditional law of total probability
+# P(H=F|M=T) = P(H=F|B=T)*P(B=T|M=T) + P(H=F|B=F)*P(B=F|M=T)
+pb_hf_mt = ( pb_bt_hf * pb_bt_mt) + (pb_bf_hf * pb_bf_mt)
+
+# And also, P(B=T), P(B=F), P(H=F)
+pb_bt = (pb_mt_bt * pb_mt) + (pb_mf_bt * pb_mf)
+pb_bf = (pb_mt_bf * pb_mt) + (pb_mf_bf * pb_mf)
+pb_hf = (pb_bt_hf * pb_bt) + (pb_bf_hf * pb_bf)
+
+# Finally
+pb_mt_hf = (pb_hf_mt * pb_mt)/pb_hf
+pb_mt_hf
+
+# Now we can compare this result with the previous ones
+er_BN <- abs(pb_mt_hf - 0.1875)
+er_LS <- abs(pb_mt_hf - 0.167979)
+er_LW <- abs(pb_mt_hf - 0.223)
+
+results <- matrix(c(er_BN, er_LS, er_LW), ncol=3, byrow = TRUE)
+errors <- as.table(results)
+colnames(errors) <- c("BN error", "LS error", "LW error")
+rownames(errors) <- c("Error")
+
+errors
+```
+
+### For the evidence “H = F” and the query variable M, compute the KullbackLeibler divergence for the LS Algorithm, and also compute it for the LW Algorithm, and compare them. Which algorithm seems to be better?
+
+```{r}
+
+
+
+
+
+
+
+```
+
