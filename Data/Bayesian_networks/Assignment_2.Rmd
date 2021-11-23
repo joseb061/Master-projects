@@ -12,6 +12,8 @@ library(bnlearn)
 ```
 
 ### Using gRain, develop the corresponding Bayesian Network and use it to compute P(M = T/H = F) and P(M = F/H = T).
+
+We will create the Bayesian Networks using the proper commands from the package *gRain*, then we will create an evidence and predict the updated probability.
 ```{r Bayesian Network}
 # We are working with boolean variables
 tf<-c("true","false")
@@ -41,79 +43,88 @@ colnames(False_evidence) <- "H"
 evidence <- as.data.frame(False_evidence)
 predict(Network.gr, response = "M", predictors = "H", newdata = evidence, type = "dist")
 ```
-As we can see we obtain $P(M = T/H = T)=0.2077922$ and $P(M = T/H = F)=0.1875$.
+As we can see we obtain the next results by exact inference: $$P(M = T/H = F)=0.1875 \\ P(M = F/H = T)=0.7922078$$
 
 
-### Develop the LS Algorithm to find these two probabilities with R and compare
-the results with previous item
+### Develop the LS Algorithm to find these two probabilities with R and compare the results with previous item.
 
-For this question we will use the functions *cpdist* (for sampling) from the package *bnlearn* and *querygrain* from *grain* package.
+For this question we will use the function *cpdist* (for sampling) from the package *bnlearn*. WE will set a seed in order to obtain the same results and do $n=10.000$ in order to accurate the prediction.
 ```{r Logic Sampling Algorithm}
 set.seed(0)
 Network.fit <- as.bn.fit(Network.gr)
 
-# Case H = true
-samples.cancer <- cpdist(Network.fit, nodes = nodes(Network.fit), evidence = (H=="true"), n = 1000)
-summary(samples.cancer)
-pbLS_Htrue <- table(samples.cancer[,c('M')])
-prop.table(pbLS_Htrue)
+# Case 100 iterations
+samples.cancer_100 <- cpdist(Network.fit, nodes = nodes(Network.fit), evidence = TRUE, n = 100)
+summary(samples.cancer_100)
+pbLS_100 <- table(samples.cancer_100[,c('M','H')])
+prop.table(pbLS_100, 2)
 
-# Case H = false
-samples.cancer <- cpdist(Network.fit, nodes = nodes(Network.fit), evidence = (H=="false"), n = 1000)
-summary(samples.cancer)
-pbLS_Hfalse <- table(samples.cancer[,c('M')])
-prop.table(pbLS_Hfalse)
+# Case 100.000 iterations
+samples.cancer_100000 <- cpdist(Network.fit, nodes = nodes(Network.fit), evidence = TRUE, n = 100000)
+summary(samples.cancer_100000)
+pbLS_100000 <- table(samples.cancer_100000[,c('M','H')])
+prop.table(pbLS_100000, 2)
 ```
+So we obtain for 100 iterations:  $$P(M = T/H = F)=0.1794872 \\ P(M = F/H = T)=0.8196721 $$
+And for 100.000 iterations:  $$P(M = T/H = F)=0.1864332 \\ P(M = F/H = T)=0.7934449 $$.
 
 Since we are able to do exact inference we can measure the absolute error:
 ```{r Computing absolute errors for LS}
-# Case H = true
-Evidence_true.gr <- setEvidence(Cancer.gr, nodes="H", states = c("true"))
-exactpb_Htrue <- querygrain(Evidence_true.gr, nodes = c("M"), type = "joint")
-error_Htrue <- abs(exactpb_Htrue - prop.table(pbLS_Htrue))
-error_Htrue
+# Case 100 iterations
+LS_100_MT_HF <- abs(0.1875 - 0.1794872)
+LS_100_MF_HT <- abs(0.7922078 - 0.8196721)
+LS_100000_MT_HF <- abs(0.1875 - 0.1864332 )
+LS_100000_MF_HT <- abs(0.7922078 - 0.7934449)
 
-# Case H = false
-Evidence_false.gr <- setEvidence(Cancer.gr, nodes="H", states = c("false"))
-exactpb_Hfalse <- querygrain(Evidence_false.gr, nodes = c("M"), type = "joint")
-error_Hfalse <- abs(exactpb_Hfalse - prop.table(pbLS_Hfalse))
-error_Hfalse
+  
+error_LS <- matrix(c(LS_100_MT_HF, LS_100_MF_HT, LS_100000_MT_HF, LS_100000_MF_HT), ncol=2, nrow=2, byrow = TRUE)
+error_LS <- as.table(error_LS)
+colnames(error_LS) <- c("P(M = T/H = F)","P(M = F/H = T)")
+rownames(error_LS) <- c("100 iter","100.000 iter")
+  
+error_LS
 ```
 
 
-### Develop the LW Algorithm to find these two probabilities with R and compare
-the results with previous items.
+### Develop the LW Algorithm to find these two probabilities with R and compare the results with previous items.
+In this case we will also use the function *cpdist*, however we will choose *method="lw" which refers to use the Likelihood Weighting algorithm.
 ```{r Likelihood Weighting Algorithm}
 set.seed(0)
-Network.fit <- as.bn.fit(Network.gr)
-# Case H = true
-samples.cancer <- cpdist(Network.fit, nodes = nodes(Network.fit), evidence = list(H="true"), n = 1000, method = "lw")
-summary(samples.cancer)
-pbLW_Htrue <- table(samples.cancer[,c('M')])
-prop.table(pbLW_Htrue)
+# Case 100 iterations
+LW_100_MT_HF <- cpquery(Network.fit, event=(M=="true"), evidence=list(H="false"), n=100, method="lw")
+LW_100_MF_HT <- cpquery(Network.fit, event=(M=="false"), evidence=list(H="true"), n=100, method="lw")
+LW_100_MT_HF
+LW_100_MF_HT
 
-# Case H = false
-samples.cancer <- cpdist(Network.fit, nodes = nodes(Network.fit), evidence = list(H="false"), n = 1000, method = "lw")
-summary(samples.cancer)
-pbLW_Hfalse <- table(samples.cancer[,c('M')])
-prop.table(pbLW_Hfalse)
+# Case 100000 iterations
+LW_100000_MT_HF <- cpquery(Network.fit, event=(M=="true"), evidence=list(H="false"), n=100000, method="lw")
+LW_100000_MF_HT <- cpquery(Network.fit, event=(M=="false"), evidence=list(H="true"), n=100000, method="lw")
+LW_100000_MT_HF
+LW_100000_MF_HT
 ```
-Now we can compute the absolute errors:
+So we obtain for 100 iterations:  $$P(M = T/H = F)=0.1518325 \\ P(M = F/H = T)=0.8653846  $$
+And for 100.000 iterations:  $$P(M = T/H = F)=0.1883984 \\ P(M = F/H = T)=0.7936135 $$.
+
+Now we can measure the absolute error:
 ```{r Computing absolute errors for LW}
-# Case H = true
-error_Htrue <- abs(exactpb_Htrue - prop.table(pbLW_Htrue))
-error_Htrue
+# Case 100 iterations
+LW_100_MT_HF <- abs(0.1875 - 0.1518325)
+LW_100_MF_HT <- abs(0.7922078 - 0.8653846)
+LW_100000_MT_HF <- abs(0.1875 - 0.1883984 )
+LW_100000_MF_HT <- abs(0.7922078 - 0.7936135)
 
-# Case H = false
-error_Hfalse <- abs(exactpb_Hfalse - prop.table(pbLW_Hfalse))
-error_Hfalse
+  
+error_LW <- matrix(c(LW_100_MT_HF, LW_100_MF_HT, LW_100000_MT_HF, LW_100000_MF_HT), ncol=2, nrow=2, byrow = TRUE)
+error_LW <- as.table(error_LW)
+colnames(error_LW) <- c("P(M = T/H = F)","P(M = F/H = T)")
+rownames(error_LW) <- c("100 iter","100.000 iter")
+  
+error_LW
 ```
-
-
 
 ### Compute exactly “by hand” P(M = T/H = F), and compare with (a), (b) and (c).
 For computing exactly the value of P(M = T/H = F) we can do an upward propagation:
-```{r}
+```{r Computations by hand}
 # Probabilities knowed
 pb_mt = 0.2
 pb_mf = 0.8
@@ -145,9 +156,10 @@ pb_mt_hf = (pb_hf_mt * pb_mt)/pb_hf
 pb_mt_hf
 
 # Now we can compare this result with the previous ones
+# We consider the 100.000 iterations case
 er_BN <- abs(pb_mt_hf - 0.1875)
-er_LS <- abs(pb_mt_hf - 0.167979)
-er_LW <- abs(pb_mt_hf - 0.223)
+er_LS <- abs(pb_mt_hf - 0.1864332)
+er_LW <- abs(pb_mt_hf - 0.1883984)
 
 results <- matrix(c(er_BN, er_LS, er_LW), ncol=3, byrow = TRUE)
 errors <- as.table(results)
@@ -159,13 +171,31 @@ errors
 
 ### For the evidence “H = F” and the query variable M, compute the KullbackLeibler divergence for the LS Algorithm, and also compute it for the LW Algorithm, and compare them. Which algorithm seems to be better?
 
-```{r}
+```{r Kullback-Leibler divergence}
+# Case 100 iterations
+KL_LS_100 = (0.1794872 * log(0.1794872/0.1875)) + ((1-0.1794872) * log((1-0.1794872)/0.8125))
+KL_LW_100 = (0.1518325 * log(0.1518325/0.1875)) + ((1-0.1518325) * log((1-0.1518325)/0.8125))
+
+KL_100 <- matrix(c(KL_LS_100, KL_LW_100), ncol=2, byrow = TRUE)
+KL_100 <- as.table(KL_100)
+colnames(KL_100) <- c("LS", "LW")
+rownames(KL_100) <- c("KL divergence")
+
+KL_100
 
 
 
+# Case 100.000 iterations
+KL_LS_100000 = (0.1864332 * log(0.1864332/0.1875)) + ((1-0.1864332) * log((1-0.1864332)/0.8125))
+KL_LW_100000 = (0.1883984 * log(0.1883984/0.1875)) + ((1-0.1883984) * log((1-0.1883984)/0.8125))
 
+KL_100000 <- matrix(c(KL_LS_100000, KL_LW_100000), ncol=2, byrow = TRUE)
+KL_100000 <- as.table(KL_100000)
+colnames(KL_100000) <- c("LS", "LW")
+rownames(KL_100000) <- c("KL divergence")
 
-
-
+KL_100000
 ```
+By looking at the results, both the KL and absolute error results, we can say that LW algorithm perform better, has both lower KL and absolute error. However, when we consider a smaller number of sample size, in our case 100, it is clearly that LS algorithm has better performance. 
 
+Therefore, we can state that LS algorithm has faster convergence to an "acceptable" solution. However, LW algorithm is able to obtain better solutions when the sample size (and then the execution time) is increased. With this result is not possible to choose a best algorithm, in fact it will depend on the problem that we are trying to solve.
