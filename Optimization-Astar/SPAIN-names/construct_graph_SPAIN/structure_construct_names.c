@@ -8,7 +8,7 @@
 #include <string.h>
 #include <limits.h>
 
-#define outputfilename "Spain.bin"
+#define outputfilename "/home/joseba/Master/Data/Spain.bin"
 #define inputfilename "/home/joseba/Master/Data/spain.csv"
 
 typedef enum { false, true } bool; // Declaring boolean variables.
@@ -63,11 +63,11 @@ int main(){
     size_t row_size = 0;
     bool two_directions = false;
     int node_num = 0, way_num=0, nsuccesors =0 ,actualnodeposition, nextnodeposition;
-    char *data_string = NULL, *token, *row, *oneway, *streetname;
+    char *data_string = NULL, *token, *row, *oneway, *streetname; //*string_end = "\0"
     long unsigned int number_nodes = 23895681, streetid, actualnodeid, nextnodeid;
     register unsigned short i = 0;
     unsigned int N_comments = 3, N_tokens = 11, aux;
-    char *string_end = "\0";
+    char string_end[1]= "\0";
 
     data = fopen(inputfilename,"r");
     if (data == NULL){
@@ -96,7 +96,7 @@ int main(){
             nodes[node_num].numbersegments = 0;
             
             //memory for the nodes.succesors
-            if ((nodes[node_num].segment = (unsigned long *)malloc(2*sizeof(unsigned long))) == NULL){
+            if ((nodes[node_num].segment = (unsigned long *)malloc(0*sizeof(unsigned long))) == NULL){
                 printf("Can't allocate memory for the succesors");
                 return 3;
             }
@@ -168,7 +168,7 @@ int main(){
 
                         if (strstr(nodes[actualnodeposition].name, streetname) == NULL) {
                             
-                            if ((nodes[actualnodeposition].name = (char *)realloc(nodes[actualnodeposition].name, (strlen(nodes[actualnodeposition].name) +strlen(streetname)+2)*sizeof(char))) == NULL){
+                            if ((nodes[actualnodeposition].name = (char *)realloc(nodes[actualnodeposition].name, (strlen(nodes[actualnodeposition].name) +strlen(streetname) + nodes[actualnodeposition].numbersegments +1)*sizeof(char))) == NULL){
                                 printf("Can't allocate more memory for the names in oneway");
                                 return 4;
                             }
@@ -176,7 +176,8 @@ int main(){
                         }
                         
                         if (strstr(nodes[nextnodeposition].name, streetname) == NULL) {
-                            if ((nodes[nextnodeposition].name = (char *)realloc(nodes[nextnodeposition].name,(strlen(nodes[nextnodeposition].name) +strlen(streetname)+2)* sizeof(char))) == NULL){
+                            
+                            if ((nodes[nextnodeposition].name = (char *)realloc(nodes[nextnodeposition].name,(strlen(nodes[nextnodeposition].name) +strlen(streetname) + nodes[nextnodeposition].numbersegments +1)* sizeof(char))) == NULL){
                                 printf("Can't allocate more memory for the names in both ways\n");
                                 return 4;
                             }
@@ -197,7 +198,8 @@ int main(){
                         nodes[actualnodeposition].numbersegments ++;
                         
                         if (strstr(nodes[actualnodeposition].name, streetname) == NULL) {
-                            if ((nodes[actualnodeposition].name = (char *)realloc(nodes[actualnodeposition].name, (strlen(nodes[actualnodeposition].name) +strlen(streetname)+2)*sizeof(char))) == NULL){
+                            
+                            if ((nodes[actualnodeposition].name = (char *)realloc(nodes[actualnodeposition].name, (strlen(nodes[actualnodeposition].name) +strlen(streetname) + nodes[actualnodeposition].numbersegments +2)*sizeof(char))) == NULL){
                                 printf("Can't allocate more memory for the names in oneway");
                                 return 4;
                             }
@@ -217,12 +219,13 @@ int main(){
     fclose(data);
     printf("way num: %d\n", way_num);
 
-    // register long int r;
+    long unsigned int r;
+
     
-    // for (r = 30475499; r < 30475502 ; r++){
-    //     printf("\nId: %lu Latitutde: %lf Longitude: %lf Nsuccesors: %d\n", nodes[r].id, nodes[r].latitude, nodes[r].longitude, nodes[r].numbersegments);
-    //     printf("names: %s\n", nodes[r].name); 
-    // }
+    for (r = 0; r < 3000 ; r++){
+        printf("\nId: %lu Latitutde: %lf Longitude: %lf Nsuccesors: %d\n", nodes[r].id, nodes[r].latitude, nodes[r].longitude, nodes[r].numbersegments);
+        printf("names: %s\n", nodes[r].name); 
+    }
     // printf("dosdirecciones: %d unadireccion: %d", dosdirecciones, unadireccion);
     // printf ("Way_num: %d Node_num: %d\n", way_num,node_num);
     // for (i=0; i<number_nodes-1; i++){
@@ -232,36 +235,42 @@ int main(){
     // }
     // printf ("Suc_num: %d",nsuccesors)
     
-    /* Computing the total number of successors */
-    unsigned long ntotnsucc=0;
-    for(int i=0; i < number_nodes; i++) ntotnsucc += nodes[i].numbersegments;
-    printf("nsuc: %lu\n", ntotnsucc);
-    if ((fin = fopen (outputfilename, "wb")) == NULL)
-        ExitError("the output binary data file cannot be opened", 31);
+    // /* Computing the total number of successors */
+    // unsigned long ntotnsucc=0;
+    // for(int i=0; i < number_nodes; i++) ntotnsucc += nodes[i].numbersegments;
+    // printf("nsuc: %lu\n", ntotnsucc);
+    // if ((fin = fopen (outputfilename, "wb")) == NULL)
+    //     ExitError("the output binary data file cannot be opened", 31);
 
-    /* Global data −−− header */
-    if( fwrite(&number_nodes, sizeof(unsigned long), 1, fin) + fwrite(&ntotnsucc, sizeof(unsigned long), 1, fin) != 2 )
-        ExitError("when initializing the output binary data file", 32);
+    // /* Global data −−− header */
+    // if( fwrite(&number_nodes, sizeof(unsigned long), 1, fin) + fwrite(&ntotnsucc, sizeof(unsigned long), 1, fin) != 2 )
+    //     ExitError("when initializing the output binary data file", 32);
 
-    /* Writing all nodes */
-    if( fwrite(nodes, sizeof(node), number_nodes, fin) != number_nodes )
-        ExitError("when writing nodes to the output binary data file", 32);
+    // /* Writing all nodes */
+    // if( fwrite(nodes, sizeof(node), number_nodes, fin) != number_nodes )
+    //     ExitError("when writing nodes to the output binary data file", 32);
     
-    /* Writing sucessors in blocks */
-    for(int i=0; i < number_nodes; i++) if(nodes[i].numbersegments) {
-        if( fwrite(nodes[i].segment, sizeof(unsigned long), nodes[i].numbersegments, fin) != nodes[i].numbersegments)
-            ExitError("when writing edges to the output binary data file", 32);
-        }
+    // /* Writing sucessors in blocks */
+    // for(int i=0; i < number_nodes; i++) if(nodes[i].numbersegments) {
+    //     if( fwrite(nodes[i].segment, sizeof(unsigned long), nodes[i].numbersegments, fin) != nodes[i].numbersegments)
+    //         ExitError("when writing edges to the output binary data file", 32);
+    //     }
 
-    /* Writing sucessors in blocks */
-    for(int i=0; i < number_nodes; i++) if(nodes[i].numbersegments) {
-        if( fwrite(nodes[i].segment, sizeof(unsigned long), nodes[i].numbersegments, fin) != nodes[i].numbersegments)
-            ExitError("when writing edges to the output binary data file", 32);
-        }
+    // /* Writing sucessors in blocks */
+    // for(int i=0; i < number_nodes; i++) if(nodes[i].numbersegments) {
+    //     if( fwrite(nodes[i].segment, sizeof(unsigned long), nodes[i].numbersegments, fin) != nodes[i].numbersegments)
+    //         ExitError("when writing edges to the output binary data file", 32);
+    //     }
 
-    fclose(fin);
+    // /* Writing sucessors names in blocks */
+    // for(int i=0; i < number_nodes; i++) if(nodes[i].numbersegments) {
+    //     if( fwrite(nodes[i].name, sizeof(char), strlen(nodes[i].name) +1, fin) != strlen(nodes[i].name)+1)
+    //         ExitError("when writing edges to the output binary data file", 32);
+    //     }
+
+    // fclose(fin);
     
-    printf("The graph was written in binary");
+    // printf("The graph was written in binary");
 }
 
 
