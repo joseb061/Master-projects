@@ -36,7 +36,7 @@ int main(){
     
     bool r = AStar(nodes, PathData, size_nodes, node_start_pos, node_goal_pos);
 
-    if (r == -1){
+    if (r == false){
         printf("in allocating memory for the OPEN list in AStar");
         return 21;
     }

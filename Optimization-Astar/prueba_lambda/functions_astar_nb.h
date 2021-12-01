@@ -11,7 +11,7 @@
 #define functions_astar_nb_h
 
 
-#define inputfilename "../construct_graph_SPAIN/Spain.bin"
+#define inputfilename "../SPAIN-FUN-NONAME/construct_graph_SPAIN/Spain.bin"
 # define pi 3.14159265358979323846
 # define rad_earth 6371.0
 
@@ -281,7 +281,7 @@ void requeue_with_priority(unsigned v, PriorityQueue *Pq, AStarControlData * Q){
 }
 
 /* ------------------------------- AStar main ------------------------ */
-bool AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned node_start, unsigned node_goal) {
+unsigned long AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned node_start, unsigned node_goal, float lambda) {
     //Registers are faster than memory to access, so the variables which are most frequently used in a C program can be put in registers using register keyword
     register unsigned i;
     unsigned long counter=0;
@@ -310,7 +310,7 @@ bool AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned node_sta
         if ((node_curr = extract_min(&Open)) == node_goal) {
             free(Q);
             printf(" Number of iterations: %u \n", counter);
-            return true;
+            return counter;
         }
 
         for (i = 0; i < Graph[node_curr].numbersegments; i++) {
@@ -325,7 +325,7 @@ bool AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned node_sta
                 PathData[node_succ].parent = Graph[node_curr].id;
 
                 // We can make fast computation avoiding recomputing the heuristic
-                Q[node_succ].f = g_curr_node_succ + ((PathData[node_succ].g == 21474836.0) ? heuristic(Graph, node_succ, node_goal) : (Q[node_succ].f - PathData[node_succ].g));
+                Q[node_succ].f = g_curr_node_succ + ((PathData[node_succ].g == 21474836.0) ? (lambda)*heuristic(Graph, node_succ, node_goal) : (Q[node_succ].f - PathData[node_succ].g));
 
                 PathData[node_succ].g = g_curr_node_succ;
                 if (!Q[node_succ].IsOpen) {
@@ -340,7 +340,7 @@ bool AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned node_sta
         }
         Q[node_curr].IsOpen = false; // Cerrar nodo, ya hemos visitado
     }
-    return false;
+    return 0;
 }
 
 #endif
