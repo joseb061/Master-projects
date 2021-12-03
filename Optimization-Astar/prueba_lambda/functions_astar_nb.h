@@ -95,7 +95,7 @@ double rad2deg(double rad) {
   return (rad * 180 / pi);
 }
 
-/* --------------------------------- Law of spherical cosines --------------------------- */
+/* --------------------------------- Law of spherical cosines --------------------------- 
 double cos_weight(float lat1, float lon1, float lat2, float lon2){
     double theta, dist;
     if ((lat1 == lat2) && (lon1 == lon2)) {
@@ -109,6 +109,18 @@ double cos_weight(float lat1, float lon1, float lat2, float lon2){
         //dist = rad2deg(dist);
         //dist = dist * 60 * 1.1515;
         //dist = dist * 1.609344;
+        return dist;
+    }
+}
+*/
+
+double cos_weight(float lat1, float lon1, float lat2, float lon2){
+    double theta, dist;
+    if ((lat1 == lat2) && (lon1 == lon2)) {
+        return 0;
+    } else{
+        theta = lon1 - lon2;
+        dist = 57.2957795131*(acos(sin(0.01745329251*(lat1)) * sin(0.01745329251*(lat2)) + cos(0.01745329251*(lat1)) * cos(0.01745329251*(lat2)) * cos(0.01745329251*(theta))))*111.18957696;
         return dist;
     }
 }
@@ -191,7 +203,8 @@ float heuristic(node *Graph, unsigned vertex, unsigned goal) { // Returns the mi
     return minw;
 }
 */
-/* -------------------------------- Heuristic simplest (mejor resultado por el momento) -------------------------- */
+/* -------------------------------- Simple heuristic, good results --------------------------  */
+
 float heuristic(node *Graph, unsigned vertex, unsigned goal) { // Returns the minimum distance of all the vertexes.
     register unsigned short i;
    float initial_weigth, seg_weight;
@@ -233,8 +246,11 @@ float heuristic(node *Graph, unsigned vertex, unsigned goal) { // Returns the mi
      return minw;
  } */
 
-
-
+/* Simplest heuristic, good performance 
+float heuristic(node *Graph, unsigned vertex, unsigned goal) { 
+    return cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[vertex].latitude, Graph[vertex].longitude);
+}
+*/
 
 /* ------------------------------------------------ Queue functions -------------------------------------------- */
 bool IsEmpty(PriorityQueue Pq) { // Returns true or false.
