@@ -250,7 +250,7 @@ bool AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned node_sta
     //Registers are faster than memory to access, so the variables which are most frequently used in a C program can be put in registers using register keyword
     register unsigned i;
     PriorityQueue Open = NULL; // Open EmptyPriorityQueue
-    unsigned long counter=0;
+    unsigned long counter = 0;
     AStarControlData *Q; 
     
     if ((Q = (AStarControlData *) malloc(GrOrder*sizeof(AStarControlData))) == NULL){
@@ -259,11 +259,11 @@ bool AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned node_sta
     }
 
     for (i = 0; i < GrOrder; i++) { // All node distances set to ingraphit and no-one is opened yet.
-        PathData[i].g = 100000.999; //ULONG_MAX == The maximum value for an object of type unsigned long int.
+        PathData[i].g = 21474836.0; //ULONG_MAX == The maximum value for an object of type unsigned long int.
         Q[i].IsOpen = false;
     }
     PathData[node_start].g = 0.0;
-    PathData[node_start].parent = 1000000000;
+    PathData[node_start].parent = ULONG_MAX;
     Q[node_start].f = heuristic(Graph, node_start, node_goal);
 
     if (!add_with_priority(node_start, &Open, Q)) // si tenemos &Open en una función es para modificarlo
@@ -284,7 +284,7 @@ bool AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned node_sta
             
             if (g_curr_node_succ < PathData[node_succ].g) { // It always enter the first time.
                 PathData[node_succ].parent = Graph[node_curr].id; // hemos cambiado
-                Q[node_succ].f = g_curr_node_succ + ((PathData[node_succ].g == 10000000.999) ? heuristic(Graph, node_succ, node_goal) : (Q[node_succ].f - PathData[node_succ].g));
+                Q[node_succ].f = g_curr_node_succ + ((PathData[node_succ].g == 21474836.0) ? heuristic(Graph, node_succ, node_goal) : (Q[node_succ].f - PathData[node_succ].g));
                 PathData[node_succ].g = g_curr_node_succ;
                 
                 if (!Q[node_succ].IsOpen) {
