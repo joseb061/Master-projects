@@ -10,7 +10,7 @@
 #define functions_astar_nb_h
 
 
-#define inputfilename "Spain.bin"
+#define inputfilename "/home/joseba/Master/Data/Spain.bin"
 # define pi 3.14159265358979323846
 # define rad_earth 6371.0
 
@@ -18,7 +18,6 @@
 void ExitError(const char *miss, int errcode) {
 fprintf (stderr, "\nERROR: %s.\nStopping...\n\n", miss); exit(errcode);
 }
-
 
 typedef struct{
     unsigned long id; // In 32 bits we need to replace it for long long int id;
@@ -29,13 +28,14 @@ typedef struct{
 }node;
 
 int binary_reader(node *nodes){ 
+        
         FILE *graph;
-        unsigned long number_nodes =  23895681, ntotnsucc = 47685269;
-        unsigned long *allsuccessors;
+        unsigned long number_nodes =  23895681, ntotnsucc = 47685269, ntotnames=118767565;
+        unsigned long *allsuccessors; 
+        char *allnames, *token;
         
         if ((graph = fopen (inputfilename, "rb")) == NULL)
             ExitError("the data file does not exist or cannot be opened", 11);
-
 
         /* Global data −−− header */
         if( fread(&number_nodes, sizeof(unsigned long), 1, graph) + fread(&ntotnsucc, sizeof(unsigned long), 1, graph) != 2 )
@@ -43,6 +43,10 @@ int binary_reader(node *nodes){
 
         /* getting memory for all data */
         if( ( allsuccessors = (unsigned long *) malloc(ntotnsucc* sizeof(unsigned long))) == NULL)
+            ExitError("when allocating memory for the edges vector", 15);
+        
+        /* getting memory for all names */
+        if( ( allnames = (char *) malloc((ntotnames+1)* sizeof(char))) == NULL)
             ExitError("when allocating memory for the edges vector", 15);
 
         /* Reading all data from file */
@@ -52,12 +56,24 @@ int binary_reader(node *nodes){
         if(fread(allsuccessors, sizeof(unsigned long), ntotnsucc, graph) != ntotnsucc){
             ExitError("when reading sucessors from the binary data file", 18);}
 
-        fclose(graph);
-
         /* Setting pointers to successors */
         for(long unsigned int i=0; i < number_nodes; i++) if(nodes[i].numbersegments) {
             nodes[i].segment = allsuccessors; allsuccessors += nodes[i].numbersegments;
         }
+        
+        /* Setting pointers to names */
+        if(fread(allnames, sizeof(char), ntotnames+1, graph) != ntotnames){
+            ExitError("when reading sucessors from the binary data file", 18);}
+
+        for(long unsigned int i=0; i < number_nodes; i++){
+            token = strsep(&allnames,"@");
+            if( ( nodes[i].name = (char *) malloc((strlen(token)+1)* sizeof(char))) == NULL)
+                ExitError("when allocating memory for the edges vector", 15);
+            nodes[i].name = token;
+        }
+        
+        fclose(graph);
+
         return 0;
     
 }
