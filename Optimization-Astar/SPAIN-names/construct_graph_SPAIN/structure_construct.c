@@ -10,8 +10,8 @@
 
 #define _GNU_SOURCE
 
-#define outputfilename "/home/joseba/Master/Data/Spain.bin"
-#define inputfilename "/home/joseba/Master/Data/spain.csv"
+#define outputfilename "../../../../../../Desktop/prueba_names/Spain.bin"
+#define inputfilename "../../../../../../Desktop/prueba_names/spain.csv"
 
 
 

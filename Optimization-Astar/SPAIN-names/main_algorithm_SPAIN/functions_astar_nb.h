@@ -97,6 +97,7 @@ unsigned binarysearch(long unsigned int ident, node l[],int n){
     }
 }
 
+
 /* -------------------------------------- Functions for computing the weights ----------------------------- */
 double deg2rad(double deg) {
   return (deg * pi / 180);
@@ -120,75 +121,41 @@ double cos_weight(float lat1, float lon1, float lat2, float lon2){
     }
 }
 
-/* -------------------- EQUIRECTANGULAR PROJECTION FOR SMALL DISTANCES ------------------ */
-double weight(float lat1, float lon1, float lat2, float lon2){
-    if ((lat1==lat2) & (lon1==lon2))
-    {
-        return 0;
-    } else{
-        float x = (deg2rad(lat2-lat1))*cos((deg2rad(lon1+lon2))/2);
-        float y = deg2rad(lon2-lon1);
-        return rad_earth*(sqrt((x*x)+(y*y)));
-    }
-}
-
-double harversine_distance(float lat1, float lon1, float lat2, float lon2){
-    double u,v, dist;
-    if ((lat1 == lat2) && (lon1 == lon2)) {
-        return 0;
-    } else{
-        u = sin((deg2rad(lat2)-deg2rad(lat1))/2);
-        v = sin((deg2rad(lon2)-deg2rad(lon1))/2);
-        dist = 2.0*rad_earth*asin((u*u)+(cos(deg2rad(lat1))*cos(deg2rad(lat2))*v*v));
-        return dist;
-    }
-}
-
 /* ------------------------------- AStar functions ------------------------ */
-// /* The heuristic used */
-// float heuristic(node *Graph, unsigned vertex, unsigned goal) { // Returns the minimum distance of all the vertexes.
-//     register unsigned short i;
-//     float initial_weigth, seg_weight, minw = initial_weigth;
-//     unsigned suc_node;
-
-//     if (vertex == goal)
-//         return 0.0;
-
-//     initial_weigth = weight(Graph[vertex].latitude, Graph[vertex].longitude, Graph[Graph[vertex].segment[0]].latitude, Graph[Graph[vertex].segment[0]].longitude);
-
-//     for (i = 1; i < Graph[vertex].numbersegments; i++){
-//         suc_node = Graph[vertex].segment[i];
-//         seg_weight = weight(Graph[vertex].latitude, Graph[vertex].longitude, Graph[suc_node].latitude, Graph[suc_node].longitude);
-//         if (seg_weight < minw)
-//             minw = seg_weight;
-//     }
-//     return minw;
-// }
-
+/* 
 float heuristic(node *Graph, unsigned vertex, unsigned goal) { // Returns the minimum distance of all the vertexes.
     register unsigned short i;
-    float minw, seg_weight, seg_weight_next, seg_weight_goal, initial_weigth;
+   float initial_weigth, seg_weight;
+  unsigned suc_node;
 
-    if (vertex == goal)
-        return 0.0;
+     if (vertex == goal)
+         return 0.0;
 
-    initial_weigth = harversine_distance(Graph[goal].latitude, Graph[goal].longitude, Graph[Graph[vertex].segment[0]].latitude, Graph[Graph[vertex].segment[0]].longitude);
-    initial_weigth += cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[Graph[vertex].segment[0]].latitude, Graph[Graph[vertex].segment[0]].longitude);
+     initial_weigth = cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[Graph[vertex].segment[0]].latitude, Graph[Graph[vertex].segment[0]].longitude);
+     float minw = initial_weigth;
 
-    minw = initial_weigth;
-    unsigned suc_node;
-    for (i = 1; i < Graph[vertex].numbersegments; i++){
-        suc_node = Graph[vertex].segment[i];
-        seg_weight_next = cos_weight(Graph[vertex].latitude, Graph[vertex].longitude, Graph[suc_node].latitude, Graph[suc_node].longitude);
-        seg_weight_goal = harversine_distance(Graph[goal].latitude, Graph[goal].longitude, Graph[suc_node].latitude, Graph[suc_node].longitude);
-        seg_weight = seg_weight_goal + seg_weight_next;
-        if (seg_weight < minw)
-            minw = seg_weight;
-    }
-    return minw;
-}
+     for (i = 1; i < Graph[vertex].numbersegments; i++){
+         suc_node = Graph[vertex].segment[i];
+         seg_weight = cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[suc_node].latitude, Graph[suc_node].longitude);
+         if (seg_weight < minw)
+             minw = seg_weight;
+     }
+     return minw;
+ }
+*/
 
 
+/*float heuristic(node *Graph, unsigned vertex, unsigned goal) { 
+    return 0;
+}*/
+
+/*float heuristic(node *Graph, unsigned vertex, unsigned goal) { 
+    return cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[vertex].latitude, Graph[vertex].longitude);
+}*/
+
+
+
+/* ------------------------------- Queue functions  ------------------------ */
 bool IsEmpty(PriorityQueue Pq) { // Returns true or false.
     return ((bool) (Pq == NULL));
 }
