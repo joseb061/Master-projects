@@ -34,51 +34,7 @@ int main(){
     if((nodes = (node *) malloc(size_nodes* sizeof(node))) == NULL)
         ExitError("when allocating memory for the nodes vector", 13);
      
-        // FILE *graph;
-        // unsigned long number_nodes =  23895681, ntotnsucc = 47685269, ntotnames=118767565;
-        // unsigned long *allsuccessors; 
-        // char *allnames, *token;
-            
-        // if ((graph = fopen (inputfilename, "rb")) == NULL)
-        //     ExitError("the data file does not exist or cannot be opened", 11);
-
-        // /* Global data −−− header */
-        // if( fread(&number_nodes, sizeof(unsigned long), 1, graph) + fread(&ntotnsucc, sizeof(unsigned long), 1, graph) != 2 )
-        //     ExitError("when reading the header of the binary data file", 12);
-
-        // /* getting memory for all data */
-        // if( ( allsuccessors = (unsigned long *) malloc(ntotnsucc* sizeof(unsigned long))) == NULL)
-        //     ExitError("when allocating memory for the edges vector", 15);
-        
-        // /* getting memory for all names */
-        // if( ( allnames = (char *) malloc((ntotnames+1)* sizeof(char))) == NULL)
-        //     ExitError("when allocating memory for the edges vector", 15);
-
-        // /* Reading all data from file */
-        // if( fread(nodes, sizeof(node), number_nodes, graph) != number_nodes ){
-        //     ExitError("when reading nodes from the binary data file", 17);}
-        
-        // if(fread(allsuccessors, sizeof(unsigned long), ntotnsucc, graph) != ntotnsucc){
-        //     ExitError("when reading sucessors from the binary data file", 18);}
-
-        // /* Setting pointers to successors */
-        // for(long unsigned int i=0; i < number_nodes; i++) if(nodes[i].numbersegments) {
-        //     nodes[i].segment = allsuccessors; allsuccessors += nodes[i].numbersegments;
-        // }
-        
-        // /* Setting pointers to names */
-        // if(fread(allnames, sizeof(char), ntotnames+1, graph) != ntotnames){
-        //     ExitError("when reading sucessors from the binary data file", 18);}
-
-        // for(long unsigned int i=0; i < number_nodes; i++){
-        //     token = strsep(&allnames,"@");
-        //     if( ( nodes[i].name = (char *) malloc((strlen(token)+1)* sizeof(char))) == NULL)
-        //         ExitError("when allocating memory for the edges vector", 15);
-        //     nodes[i].name = token;
-        // }
-        
-        // fclose(graph);
-        
+   
     if((binary_reader(nodes)) == 0) {
         printf("The graph has been readed and stored\n");
     }

@@ -122,7 +122,7 @@ double cos_weight(float lat1, float lon1, float lat2, float lon2){
 }
 
 /* ------------------------------- AStar functions ------------------------ */
-/* 
+ 
 float heuristic(node *Graph, unsigned vertex, unsigned goal) { // Returns the minimum distance of all the vertexes.
     register unsigned short i;
    float initial_weigth, seg_weight;
@@ -142,7 +142,7 @@ float heuristic(node *Graph, unsigned vertex, unsigned goal) { // Returns the mi
      }
      return minw;
  }
-*/
+
 
 
 /*float heuristic(node *Graph, unsigned vertex, unsigned goal) { 
