@@ -250,6 +250,7 @@ bool AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned node_sta
     //Registers are faster than memory to access, so the variables which are most frequently used in a C program can be put in registers using register keyword
     register unsigned i;
     PriorityQueue Open = NULL; // Open EmptyPriorityQueue
+    unsigned long counter=0;
     AStarControlData *Q; 
     
     if ((Q = (AStarControlData *) malloc(GrOrder*sizeof(AStarControlData))) == NULL){
@@ -270,7 +271,9 @@ bool AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned node_sta
     
     while (!IsEmpty(Open)) {
         unsigned node_curr;
+        counter++;
         if ((node_curr = extract_min(&Open)) == node_goal) {
+            printf(" Number of iterations: %u \n", counter);
             free(Q);
             return true;
         }
