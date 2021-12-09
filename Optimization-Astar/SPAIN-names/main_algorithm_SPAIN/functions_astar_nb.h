@@ -1,3 +1,4 @@
+//version local
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
@@ -97,7 +98,6 @@ unsigned binarysearch(long unsigned int ident, node l[],int n){
     }
 }
 
-
 /* -------------------------------------- Functions for computing the weights ----------------------------- */
 double deg2rad(double deg) {
   return (deg * pi / 180);
@@ -121,41 +121,62 @@ double cos_weight(float lat1, float lon1, float lat2, float lon2){
     }
 }
 
-/* ------------------------------- AStar functions ------------------------ */
- 
-float heuristic(node *Graph, unsigned vertex, unsigned goal) { // Returns the minimum distance of all the vertexes.
-    register unsigned short i;
-   float initial_weigth, seg_weight;
-  unsigned suc_node;
+/* -------------------- EQUIRECTANGULAR PROJECTION FOR SMALL DISTANCES ------------------ */
+double weight(float lat1, float lon1, float lat2, float lon2){
+    if ((lat1==lat2) & (lon1==lon2))
+    {
+        return 0;
+    } else{
+        float x = (deg2rad(lat2-lat1))*cos((deg2rad(lon1+lon2))/2);
+        float y = deg2rad(lon2-lon1);
+        return rad_earth*(sqrt((x*x)+(y*y)));
+    }
+}
 
-     if (vertex == goal)
-         return 0.0;
+double harversine_distance(float lat1, float lon1, float lat2, float lon2){
+    double u,v, dist;
+    if ((lat1 == lat2) && (lon1 == lon2)) {
+        return 0;
+    } else{
+        u = sin((deg2rad(lat2)-deg2rad(lat1))/2);
+        v = sin((deg2rad(lon2)-deg2rad(lon1))/2);
+        dist = 2.0*rad_earth*asin((u*u)+(cos(deg2rad(lat1))*cos(deg2rad(lat2))*v*v));
+        return dist;
+    }
+}
 
-     initial_weigth = cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[Graph[vertex].segment[0]].latitude, Graph[Graph[vertex].segment[0]].longitude);
-     float minw = initial_weigth;
+// float heuristic(node *Graph, unsigned vertex, unsigned goal) { // Returns the minimum distance of all the vertexes.
+//     register unsigned short i;
+//    float initial_weigth, seg_weight;
+//   unsigned suc_node;
 
-     for (i = 1; i < Graph[vertex].numbersegments; i++){
-         suc_node = Graph[vertex].segment[i];
-         seg_weight = cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[suc_node].latitude, Graph[suc_node].longitude);
-         if (seg_weight < minw)
-             minw = seg_weight;
-     }
-     return minw;
- }
+//      if (vertex == goal)
+//          return 0.0;
+
+//      initial_weigth = cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[Graph[vertex].segment[0]].latitude, Graph[Graph[vertex].segment[0]].longitude);
+//      float minw = initial_weigth;
+
+//      for (i = 1; i < Graph[vertex].numbersegments; i++){
+//          suc_node = Graph[vertex].segment[i];
+//          seg_weight = cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[suc_node].latitude, Graph[suc_node].longitude);
+//          if (seg_weight < minw)
+//              minw = seg_weight;
+//      }
+//      return minw;
+//  }
 
 
 
-/*float heuristic(node *Graph, unsigned vertex, unsigned goal) { 
-    return 0;
-}*/
+// float heuristic(node *Graph, unsigned vertex, unsigned goal) { 
+//     return 0;
+// }
 
-/*float heuristic(node *Graph, unsigned vertex, unsigned goal) { 
+float heuristic(node *Graph, unsigned vertex, unsigned goal) {
+    printf("hola");
     return cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[vertex].latitude, Graph[vertex].longitude);
-}*/
+}
 
 
-
-/* ------------------------------- Queue functions  ------------------------ */
 bool IsEmpty(PriorityQueue Pq) { // Returns true or false.
     return ((bool) (Pq == NULL));
 }
@@ -205,8 +226,9 @@ bool AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned node_sta
     //Registers are faster than memory to access, so the variables which are most frequently used in a C program can be put in registers using register keyword
     register unsigned i;
     PriorityQueue Open = NULL; // Open EmptyPriorityQueue
-    unsigned long counter = 0;
     AStarControlData *Q; 
+    unsigned long counter = 0;
+
     
     if ((Q = (AStarControlData *) malloc(GrOrder*sizeof(AStarControlData))) == NULL){
         printf("Error when allocating memory for the AStar Control Data vector");
@@ -214,11 +236,11 @@ bool AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned node_sta
     }
 
     for (i = 0; i < GrOrder; i++) { // All node distances set to ingraphit and no-one is opened yet.
-        PathData[i].g = 21474836.0; //ULONG_MAX == The maximum value for an object of type unsigned long int.
+        PathData[i].g = 100000.999; //ULONG_MAX == The maximum value for an object of type unsigned long int.
         Q[i].IsOpen = false;
     }
     PathData[node_start].g = 0.0;
-    PathData[node_start].parent = ULONG_MAX;
+    PathData[node_start].parent = 1000000000;
     Q[node_start].f = heuristic(Graph, node_start, node_goal);
 
     if (!add_with_priority(node_start, &Open, Q)) // si tenemos &Open en una función es para modificarlo
@@ -228,7 +250,7 @@ bool AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned node_sta
         unsigned node_curr;
         counter++;
         if ((node_curr = extract_min(&Open)) == node_goal) {
-            printf(" Number of iterations: %u \n", counter);
+            printf(" Number of iterations: %lu \n", counter);
             free(Q);
             return true;
         }
@@ -239,7 +261,7 @@ bool AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned node_sta
             
             if (g_curr_node_succ < PathData[node_succ].g) { // It always enter the first time.
                 PathData[node_succ].parent = Graph[node_curr].id; // hemos cambiado
-                Q[node_succ].f = g_curr_node_succ + ((PathData[node_succ].g == 21474836.0) ? heuristic(Graph, node_succ, node_goal) : (Q[node_succ].f - PathData[node_succ].g));
+                Q[node_succ].f = g_curr_node_succ + ((PathData[node_succ].g == 100000.999) ? heuristic(Graph, node_succ, node_goal) : (Q[node_succ].f - PathData[node_succ].g));
                 PathData[node_succ].g = g_curr_node_succ;
                 
                 if (!Q[node_succ].IsOpen) {
