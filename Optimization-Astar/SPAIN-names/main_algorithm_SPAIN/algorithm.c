@@ -4,6 +4,7 @@
 # include <string.h>
 # include <math.h> // For computing the weigths of each segment
 # include <limits.h> // Defines infinities.
+# include <time.h>
 
 
 # include "structures.h"
@@ -47,8 +48,11 @@ int main(){
     unsigned long node_start = 240949599 , node_goal = 195977239  ; // Id of the nodes
     unsigned node_start_pos = binarysearch(node_start, nodes, size_nodes);
     unsigned node_goal_pos = binarysearch(node_goal, nodes, size_nodes);
-        
+      
+    clock_t tic = clock();
     bool r = AStar(nodes, PathData, size_nodes, node_start_pos, node_goal_pos);
+    clock_t toc = clock();
+    printf("Elapsed time : %lf", (double)(toc - tic) / CLOCKS_PER_SEC);
 
     if (r == -1){
         printf("in allocating memory for the OPEN list in AStar");
