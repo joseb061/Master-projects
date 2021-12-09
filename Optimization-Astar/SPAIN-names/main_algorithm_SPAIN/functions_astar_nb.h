@@ -147,22 +147,22 @@ double harversine_distance(float lat1, float lon1, float lat2, float lon2){
 
 // float heuristic(node *Graph, unsigned vertex, unsigned goal) { // Returns the minimum distance of all the vertexes.
 //     register unsigned short i;
-//    float initial_weigth, seg_weight;
-//   unsigned suc_node;
+//     float initial_weigth, seg_weight;
+//     unsigned suc_node;
 
-//      if (vertex == goal)
-//          return 0.0;
+//     if (vertex == goal)
+//         return 0.0;
 
-//      initial_weigth = cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[Graph[vertex].segment[0]].latitude, Graph[Graph[vertex].segment[0]].longitude);
-//      float minw = initial_weigth;
+//     initial_weigth = cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[Graph[vertex].segment[0]].latitude, Graph[Graph[vertex].segment[0]].longitude);
+//     float minw = initial_weigth;
 
-//      for (i = 1; i < Graph[vertex].numbersegments; i++){
-//          suc_node = Graph[vertex].segment[i];
-//          seg_weight = cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[suc_node].latitude, Graph[suc_node].longitude);
-//          if (seg_weight < minw)
-//              minw = seg_weight;
-//      }
-//      return minw;
+//     for (i = 1; i < Graph[vertex].numbersegments; i++){
+//         suc_node = Graph[vertex].segment[i];
+//         seg_weight = cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[suc_node].latitude, Graph[suc_node].longitude);
+//         if (seg_weight < minw)
+//             minw = seg_weight;
+//     }
+//     return minw;
 //  }
 
 
@@ -172,7 +172,6 @@ double harversine_distance(float lat1, float lon1, float lat2, float lon2){
 // }
 
 float heuristic(node *Graph, unsigned vertex, unsigned goal) {
-    printf("hola");
     return cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[vertex].latitude, Graph[vertex].longitude);
 }
 
@@ -228,6 +227,7 @@ bool AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned node_sta
     PriorityQueue Open = NULL; // Open EmptyPriorityQueue
     AStarControlData *Q; 
     unsigned long counter = 0;
+    float numberg =21474836.0 ;
 
     
     if ((Q = (AStarControlData *) malloc(GrOrder*sizeof(AStarControlData))) == NULL){
@@ -236,11 +236,11 @@ bool AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned node_sta
     }
 
     for (i = 0; i < GrOrder; i++) { // All node distances set to ingraphit and no-one is opened yet.
-        PathData[i].g = 100000.999; //ULONG_MAX == The maximum value for an object of type unsigned long int.
+        PathData[i].g = numberg; //ULONG_MAX == The maximum value for an object of type unsigned long int.
         Q[i].IsOpen = false;
     }
     PathData[node_start].g = 0.0;
-    PathData[node_start].parent = 1000000000;
+    PathData[node_start].parent = ULONG_MAX;//1000000000;
     Q[node_start].f = heuristic(Graph, node_start, node_goal);
 
     if (!add_with_priority(node_start, &Open, Q)) // si tenemos &Open en una función es para modificarlo
@@ -256,12 +256,13 @@ bool AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned node_sta
         }
         for (i = 0; i < Graph[node_curr].numbersegments; i++) {
             unsigned node_succ = Graph[node_curr].segment[i];
+            if (Graph[node_succ].numbersegments == 0){continue;}
             float suc_weight = cos_weight(Graph[node_curr].latitude, Graph[node_curr].longitude, Graph[node_succ].latitude, Graph[node_succ].longitude);
             float g_curr_node_succ = PathData[node_curr].g + suc_weight;
-            
+    
             if (g_curr_node_succ < PathData[node_succ].g) { // It always enter the first time.
                 PathData[node_succ].parent = Graph[node_curr].id; // hemos cambiado
-                Q[node_succ].f = g_curr_node_succ + ((PathData[node_succ].g == 100000.999) ? heuristic(Graph, node_succ, node_goal) : (Q[node_succ].f - PathData[node_succ].g));
+                Q[node_succ].f = g_curr_node_succ + ((PathData[node_succ].g == numberg) ? heuristic(Graph, node_succ, node_goal) : (Q[node_succ].f - PathData[node_succ].g));
                 PathData[node_succ].g = g_curr_node_succ;
                 
                 if (!Q[node_succ].IsOpen) {
