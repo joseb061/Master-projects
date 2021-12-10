@@ -106,6 +106,7 @@ double deg2rad(double deg) {
 double rad2deg(double rad) {
   return (rad * 180 / pi);
 }
+
 double cos_weight(float lat1, float lon1, float lat2, float lon2){
     double theta, dist;
     if ((lat1 == lat2) && (lon1 == lon2)) {
@@ -120,6 +121,17 @@ double cos_weight(float lat1, float lon1, float lat2, float lon2){
         return dist;
     }
 }
+
+// double cos_weight(float lat1, float lon1, float lat2, float lon2){
+//     double theta, dist;
+//     if ((lat1 == lat2) && (lon1 == lon2)) {
+//         return 0;
+//     } else{
+//         theta = lon1 - lon2;
+//         dist = 57.2957795131*(acos(sin(0.01745329251*(lat1)) * sin(0.01745329251*(lat2)) + cos(0.01745329251*(lat1)) * cos(0.01745329251*(lat2)) * cos(0.01745329251*(theta))))*111.18957696;
+//         return dist;
+//     }
+// }
 
 /* -------------------- EQUIRECTANGULAR PROJECTION FOR SMALL DISTANCES ------------------ */
 double weight(float lat1, float lon1, float lat2, float lon2){

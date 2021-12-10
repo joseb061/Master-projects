@@ -11,7 +11,7 @@
 #define functions_astar_nb_h
 
 
-#define inputfilename "../../../../../Desktop/SPAIN-FUN-NONAME/construct_graph_SPAIN/Spain.bin"
+#define inputfilename "/home/joseba/Master/Data/Spain.bin"
 # define pi 3.14159265358979323846
 # define rad_earth 6371.0
 
@@ -22,12 +22,12 @@ fprintf (stderr, "\nERROR: %s.\nStopping...\n\n", miss); exit(errcode);
 
 int binary_reader(node *nodes){ 
         FILE *graph;
-        unsigned long number_nodes =  23895681, ntotnsucc = 47685269;
-        unsigned long *allsuccessors;
+        unsigned long number_nodes =  23895681, ntotnsucc = 47685269, ntotnames=118767565;
+        unsigned long *allsuccessors; 
+        char *allnames, *token;
         
         if ((graph = fopen (inputfilename, "rb")) == NULL)
             ExitError("the data file does not exist or cannot be opened", 11);
-
 
         /* Global data −−− header */
         if( fread(&number_nodes, sizeof(unsigned long), 1, graph) + fread(&ntotnsucc, sizeof(unsigned long), 1, graph) != 2 )
@@ -35,6 +35,10 @@ int binary_reader(node *nodes){
 
         /* getting memory for all data */
         if( ( allsuccessors = (unsigned long *) malloc(ntotnsucc* sizeof(unsigned long))) == NULL)
+            ExitError("when allocating memory for the edges vector", 15);
+        
+        /* getting memory for all names */
+        if( ( allnames = (char *) malloc((ntotnames+1)* sizeof(char))) == NULL)
             ExitError("when allocating memory for the edges vector", 15);
 
         /* Reading all data from file */
@@ -44,12 +48,24 @@ int binary_reader(node *nodes){
         if(fread(allsuccessors, sizeof(unsigned long), ntotnsucc, graph) != ntotnsucc){
             ExitError("when reading sucessors from the binary data file", 18);}
 
-        fclose(graph);
-
         /* Setting pointers to successors */
         for(long unsigned int i=0; i < number_nodes; i++) if(nodes[i].numbersegments) {
             nodes[i].segment = allsuccessors; allsuccessors += nodes[i].numbersegments;
         }
+        
+        /* Setting pointers to names */
+        if(fread(allnames, sizeof(char), ntotnames+1, graph) != ntotnames){
+            ExitError("when reading sucessors from the binary data file", 18);}
+
+        for(long unsigned int i=0; i < number_nodes; i++){
+            token = strsep(&allnames,"@");
+            if( ( nodes[i].name = (char *) malloc((strlen(token)+1)* sizeof(char))) == NULL)
+                ExitError("when allocating memory for the edges vector", 15);
+            nodes[i].name = token;
+        }
+        
+        fclose(graph);
+
         return 0;
     
 }
@@ -72,10 +88,6 @@ unsigned binarysearch(long unsigned int ident, node l[],int n){
         return 0;
     }
 }
-
-
-
-
 
 /* -------------------------------------- Functions for computing the weights ----------------------------- */
 double deg2rad(double deg) {
@@ -142,10 +154,6 @@ double harversine_distance(float lat1, float lon1, float lat2, float lon2){
 }
 */
 
-
-
-
-
 /* ------------------------------- Heuristic functions ------------------------ */
 
 /* -------------------------------- The heuristic given -------------------------- 
@@ -188,27 +196,27 @@ float heuristic(node *Graph, unsigned vertex, unsigned goal) { // Returns the mi
     return minw;
 }
 */
-/* -------------------------------- Simple heuristic, good results --------------------------  */
+/* -------------------------------- Simple heuristic, good results --------------------------  kjkjbk */ 
 
-float heuristic(node *Graph, unsigned vertex, unsigned goal) { // Returns the minimum distance of all the vertexes.
-    register unsigned short i;
-   float initial_weigth, seg_weight;
-  unsigned suc_node;
+// float heuristic(node *Graph, unsigned vertex, unsigned goal) { // Returns the minimum distance of all the vertexes.
+//     register unsigned short i;
+//    float initial_weigth, seg_weight;
+//   unsigned suc_node;
 
-     if (vertex == goal)
-         return 0.0;
+//      if (vertex == goal)
+//          return 0.0;
 
-     initial_weigth = cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[Graph[vertex].segment[0]].latitude, Graph[Graph[vertex].segment[0]].longitude);
-     float minw = initial_weigth;
+//      initial_weigth = cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[Graph[vertex].segment[0]].latitude, Graph[Graph[vertex].segment[0]].longitude);
+//      float minw = initial_weigth;
 
-     for (i = 1; i < Graph[vertex].numbersegments; i++){
-         suc_node = Graph[vertex].segment[i];
-         seg_weight = cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[suc_node].latitude, Graph[suc_node].longitude);
-         if (seg_weight < minw)
-             minw = seg_weight;
-     }
-     return minw;
- }
+//      for (i = 1; i < Graph[vertex].numbersegments; i++){
+//          suc_node = Graph[vertex].segment[i];
+//          seg_weight = cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[suc_node].latitude, Graph[suc_node].longitude);
+//          if (seg_weight < minw)
+//              minw = seg_weight;
+//      }
+//      return minw;
+//  }
 
 /* -------------------------------- Heuristic simplest (falla en precision, encuentra un camino muy largo) -------------------------- 
 float heuristic(node *Graph, unsigned vertex, unsigned goal) { // Returns the minimum distance of all the vertexes.
@@ -228,11 +236,10 @@ float heuristic(node *Graph, unsigned vertex, unsigned goal) { // Returns the mi
      return minw;
  } */
 
-/* Simplest heuristic, good performance 
+//Simplest heuristic, good performance 
 float heuristic(node *Graph, unsigned vertex, unsigned goal) { 
     return cos_weight(Graph[goal].latitude, Graph[goal].longitude, Graph[vertex].latitude, Graph[vertex].longitude);
 }
-*/
 
 /* ------------------------------------------------ Queue functions -------------------------------------------- */
 bool IsEmpty(PriorityQueue Pq) { // Returns true or false.
@@ -307,7 +314,7 @@ unsigned long AStar(node *Graph, AStarPath *PathData, unsigned GrOrder, unsigned
         unsigned node_curr;
         if ((node_curr = extract_min(&Open)) == node_goal) {
             free(Q);
-            printf(" Number of iterations: %u \n", counter);
+            printf(" Number of iterations: %lu \n", counter);
             return counter;
         }
 

@@ -50,7 +50,7 @@ int main(){
     for(int k=0; k<101;k++){
         lambda_vec[k] = 0.8 + (0.004)*k;
         principal_func(nodes, lambda_vec[k], &dist_vect[k], &counter_vect[k], &time_vector[k]);
-        printf("%f;%f;%u;%f \n", lambda_vec[k], dist_vect[k], counter_vect[k], time_vector[k]);
+        printf("%f;%f;%lu;%f \n", lambda_vec[k], dist_vect[k], counter_vect[k], time_vector[k]);
     }
 
     // Saving results
@@ -59,7 +59,7 @@ int main(){
         ExitError("the output binary data file cannot be opened", 31);
     
     for(int k=0; k<100;k++){
-        fprintf(sol_save_txt, "%f;%f;%u;%f \n", lambda_vec[k], dist_vect[k], counter_vect[k], time_vector[k]);
+        fprintf(sol_save_txt, "%f;%f;%lu;%f \n", lambda_vec[k], dist_vect[k], counter_vect[k], time_vector[k]);
     }
     fclose(sol_save_txt);   
 

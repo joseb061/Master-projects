@@ -3,7 +3,7 @@
 
 typedef struct{
     unsigned long id; 
-    //char *name; 
+    char *name; 
     double latitude,longitude;
     unsigned short numbersegments;
     unsigned long *segment;

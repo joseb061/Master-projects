@@ -69,7 +69,7 @@ int main(){
     int node_num = 0, way_num=0, nsuccesors =0 ,actualnodeposition, nextnodeposition;
     long unsigned int number_nodes = 23895681, streetid, actualnodeid, nextnodeid;
     register unsigned short i = 0;
-    unsigned int N_comments = 3, N_tokens = 11, aux;
+    unsigned int N_tokens = 11, aux;
 
     data = fopen(inputfilename,"r");
     if (data == NULL){
@@ -83,11 +83,7 @@ int main(){
     }
     
     while(getline(&data_string,&row_size,data) != -1){
-        if (i < N_comments) {
-            i++;
-            continue;
-        }
-        
+    
         row = data_string;
         token = strsep(&row,"|");
         if (token == NULL)
@@ -114,8 +110,7 @@ int main(){
                 if (r == 7){nodes[node_num].latitude = atof(token);}
                 if (r == 8){nodes[node_num].longitude = atof(token);}
             }
-            node_num++; 
-            
+            node_num++;         
         }
         
         if (strcmp(token , "way") == 0 ){
@@ -247,22 +242,7 @@ int main(){
         else {continue;} 
     }
     fclose(data);
-    // printf("way num: %d\n", way_num);
 
-    // long unsigned int r;    
-    // for (r = 0; r < 3000 ; r++){
-    //     printf("\nId: %lu Latitutde: %lf Longitude: %lf Nsuccesors: %d\n", nodes[r].id, nodes[r].latitude, nodes[r].longitude, nodes[r].numbersegments);
-    //     printf("names: %s\n", nodes[r].name); 
-    // }
-    // printf("dosdirecciones: %d unadireccion: %d", dosdirecciones, unadireccion);
-    // printf ("Way_num: %d Node_num: %d\n", way_num,node_num);
-    // for (i=0; i<number_nodes-1; i++){
-    //     for (int k = 0; k < nodes[i].numbersegments; k++){
-    //         nsuccesors++;
-    //     }
-    // }
-    // printf ("Suc_num: %d",nsuccesors)
-    
     /* Computing the total number of successors and char with all the separators*/
     unsigned long ntotnsucc=0, ntotchar=0;
     for(int i=0; i < number_nodes; i++) {
