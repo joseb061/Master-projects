@@ -22,11 +22,11 @@ gcc structure_construct.c -o export1.exe
 **main_algorithm_SPAIN**
 
 ```{c}
-gcc algorithm.c -o export2.exe
+gcc algorithm.c -lm -o export2.exe
 ```
 
 **weighting_heuristic**
 
 ```{c}
-gcc algorithm.c -o export3.exe
+gcc algorithm.c -lm -o export3.exe
 ```
