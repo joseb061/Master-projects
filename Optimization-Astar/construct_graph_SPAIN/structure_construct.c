@@ -15,11 +15,11 @@
 
 
 
-typedef enum { false, true } bool; // Declaring boolean variables.
+typedef enum { false, true } bool; 
 
 typedef struct{
-    unsigned long id; // In 32 bits we need to replace it for long long int id;
-    char *name; // esto tendremos que arreglarlo
+    unsigned long id;
+    char *name; 
     double latitude,longitude;
     unsigned short numbersegments;
     unsigned long *segment;
@@ -150,7 +150,6 @@ int main(){
                     
                     if (two_directions){
 
-                        //printf("%lu\t%ld\t%ld\t %s\n",nodes[actualnodeposition].id,strlen(nodes[actualnodeposition].name),strlen(streetname),streetname);
                         if ((nodes[actualnodeposition].segment = (unsigned long *)realloc(nodes[actualnodeposition].segment,((nodes[actualnodeposition].numbersegments)+1)* sizeof(unsigned long))) == NULL){
                             printf("Can't allocate more memory for the succesors in bpth ways\n");
                             return 4;
@@ -189,15 +188,12 @@ int main(){
                                 return 6;
                                 }
                             strcat(nodes[actualnodeposition].name,"|");
-
-                        }
-                        
+                        }                    
                         actualnodeposition=nextnodeposition;                      
                     }
 
                     if (two_directions == false){
                         
-                        //printf("%ld\n",strlen(nodes[actualnodeposition].name));
                         if ((nodes[actualnodeposition].segment = (unsigned long *)realloc(nodes[actualnodeposition].segment,((nodes[actualnodeposition].numbersegments)+1)* sizeof(unsigned long))) == NULL){
                             printf("Can't allocate more memory for the succesors");
                             return 8;

@@ -11,7 +11,7 @@
 #define functions_astar_nb_h
 
 
-#define inputfilename "/home/joseba/Master/Data/Spain.bin"
+#define inputfilename "/path_to_the_file:/Spain.bin"
 # define pi 3.14159265358979323846
 # define rad_earth 6371.0
 
@@ -21,8 +21,8 @@ fprintf (stderr, "\nERROR: %s.\nStopping...\n\n", miss); exit(errcode);
 }
 
 typedef struct{
-    unsigned long id; // In 32 bits we need to replace it for long long int id;
-    char *name; // esto tendremos que arreglarlo
+    unsigned long id;
+    char *name; 
     double latitude,longitude;
     unsigned short numbersegments;
     unsigned long *segment;
@@ -122,17 +122,6 @@ double cos_weight(float lat1, float lon1, float lat2, float lon2){
     }
 }
 
-// double cos_weight(float lat1, float lon1, float lat2, float lon2){
-//     double theta, dist;
-//     if ((lat1 == lat2) && (lon1 == lon2)) {
-//         return 0;
-//     } else{
-//         theta = lon1 - lon2;
-//         dist = 57.2957795131*(acos(sin(0.01745329251*(lat1)) * sin(0.01745329251*(lat2)) + cos(0.01745329251*(lat1)) * cos(0.01745329251*(lat2)) * cos(0.01745329251*(theta))))*111.18957696;
-//         return dist;
-//     }
-// }
-
 /* -------------------- EQUIRECTANGULAR PROJECTION FOR SMALL DISTANCES ------------------ */
 double weight(float lat1, float lon1, float lat2, float lon2){
     if ((lat1==lat2) & (lon1==lon2))
@@ -157,6 +146,8 @@ double harversine_distance(float lat1, float lon1, float lat2, float lon2){
     }
 }
 
+
+//Different heuristic functions.
 // float heuristic(node *Graph, unsigned vertex, unsigned goal) { // Returns the minimum distance of all the vertexes.
 //     register unsigned short i;
 //     float initial_weigth, seg_weight;

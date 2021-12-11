@@ -11,20 +11,7 @@
 # include "functions_astar_nb.h"
 
 #define number_nodes_SPAIN 23895681
-// #define inputfilename "/home/joseba/Master/Data/Spain.bin"
-
-
-// typedef struct{
-//     unsigned long id; // In 32 bits we need to replace it for long long int id;
-//     char *name; // esto tendremos que arreglarlo
-//     double latitude,longitude;
-//     unsigned short numbersegments;
-//     unsigned long *segment;
-// }node;
-
-// void ExitError(const char *miss, int errcode) {
-//     fprintf (stderr, "\nERROR: %s.\nStopping...\n\n", miss); exit(errcode);
-// }
+#define inputfilename "/path_to_the_file:/Spain.bin"
 
 int main(){
     
@@ -64,7 +51,7 @@ int main(){
 	}
     else printf("\n AStar completed \n");
     
-    // Priting the results
+
     printf("\n Optimal path found:\n");
     printf("\n ----------|---------\n");
     printf("\n Source: %lu Source_lat: %lf Source_lon: %lf \n", nodes[node_start_pos].id,nodes[node_start_pos].latitude,nodes[node_start_pos].longitude );
@@ -73,7 +60,7 @@ int main(){
     
     // Finaly we reconstruct the path and print it
     unsigned long v = node_goal_pos ,pv, ppv;
-    //PathData[v].parent = 1000000000;
+    
     pv = PathData[v].parent;
     
     while (v != node_start){ // Reconstructs the path backwards.
@@ -84,6 +71,7 @@ int main(){
     }
         
     //--------------- TXT FOR RESULTS -------------
+    
     FILE *sol_save_txt;
     if ((sol_save_txt = fopen ("RESULTS.txt", "w")) == NULL)
         ExitError("the output binary data file cannot be opened", 31);
@@ -93,33 +81,18 @@ int main(){
     }
      fclose(sol_save_txt); 
     
-    
-    
-    /* --------------- BINARY FILE OF RESULTS -------------*/
-    // FILE *sol;
-    // if ((sol = fopen ("pathsolution.bin", "wb")) == NULL)
-    //     ExitError("the output binary data file cannot be opened", 31);    
-    
-    // for (v = PathData[node_start_pos].parent; v != node_goal_pos; v = PathData[binarysearch(v,nodes,size_nodes)].parent){
-    //     printf("(%3.3lu) | %7.3f | %7.5f | %7.5f\n", v, PathData[binarysearch(v,nodes,size_nodes)].g, nodes[binarysearch(v,nodes,size_nodes)].latitude, nodes[binarysearch(v,nodes,size_nodes)].longitude );
-    //     if(fwrite(&nodes[binarysearch(v,nodes,size_nodes)].latitude, sizeof(unsigned long), 1, sol) + fwrite(&nodes[binarysearch(v,nodes,size_nodes)].longitude, sizeof(unsigned long), 1, sol) != 2 ){
-    //         ExitError("when initializing the output binary data file", 32);}
-    // }
-    // fclose(sol);
-    // printf("----------|---------|---------|---------\n");
-    // printf("Node id | Distance | Latitude | Longitude\n");
-    
+        
     //--------------- TXT FILE OF RESULTS GOOGLE EARTH -------------
 
-    // FILE *soltxt;
+    FILE *soltxt;
 
-    // if ((soltxt = fopen ("pathsolution.csv", "w")) == NULL)
-    //     ExitError("the output binary data file cannot be opened", 31);
+    if ((soltxt = fopen ("pathsolution.csv", "w")) == NULL)
+        ExitError("the output binary data file cannot be opened", 31);
     
-    // for (v = PathData[node_start_pos].parent; v != node_goal_pos; v = PathData[binarysearch(v,nodes,size_nodes)].parent){
-    //     fprintf(soltxt,"%lf,%lf\n", nodes[binarysearch(v,nodes,size_nodes)].latitude, nodes[binarysearch(v,nodes,size_nodes)].longitude);
-    // }
-    // fclose(soltxt);
+    for (v = PathData[node_start_pos].parent; v != node_goal_pos; v = PathData[binarysearch(v,nodes,size_nodes)].parent){
+        fprintf(soltxt,"%lf,%lf\n", nodes[binarysearch(v,nodes,size_nodes)].latitude, nodes[binarysearch(v,nodes,size_nodes)].longitude);
+    }
+    fclose(soltxt);
         
     return 0;
 
