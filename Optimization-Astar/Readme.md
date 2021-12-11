@@ -12,7 +12,7 @@ This proyect has three branches:
 * weighting_heuristic: in this folder you will find several experiments explained in the report. In addition, inside the file there is a sub-directory with a Jupyter notebook file which is in charge of representing the results obtained in the different experiments.
 
 ## Execution
-Una vez cambiado los directorios en los que se encuentras los ficheros de entrada y de salida (en la parte superior de los programas) la ejecucion se realiza de la siguente manera: 
+Once the directories where the input and output files are located have been changed (at the top of the programmes), the execution is carried out in the following way:
 
 **Construct_graph_SPAIN**
 ```{c}
