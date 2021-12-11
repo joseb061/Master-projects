@@ -3,7 +3,8 @@
 This project computes an optimal path (according to distance) from Bası́lica de Santa
 Maria del Mar (Plaça de Santa Maria) in Barcelona to the Giralda (Calle Mateos Gago) in Sevilla by
 using an AStar algorithm.
-![(weighting_heuristic/Imagenes_resultado_1/Astar_map.PNG)]
+![](weighting_heuristic/Imagenes_resultado_1/Astar_map.PNG)
+
 ## Content
 This proyect has three branches:
 * Construct_graph_SPAIN: here we can find the code for structuring the data of Spain.csv. We can find the file [here](http://lluis-alseda.cat/MasterOpt/index.html)
