@@ -13,13 +13,19 @@ This proyect has three branches:
 ## Execution
 Una vez cambiado los directorios en los que se encuentras los ficheros de entrada y de salida (en la parte superior de los programas) la ejecucion se realiza de la siguente manera: 
 
-*Construct_graph_SPAIN*
+**Construct_graph_SPAIN**
 ```{c}
 gcc structure_construct.c -o export1.exe
 ```
 
-*main_algorithm_SPAIN*
+**main_algorithm_SPAIN**
 
 ```{c}
 gcc algorithm.c -o export2.exe
+```
+
+**weighting_heuristic**
+
+```{c}
+gcc algorithm.c -o export3.exe
 ```
