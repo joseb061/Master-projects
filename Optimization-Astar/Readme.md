@@ -16,10 +16,15 @@ This proyect has three branches:
 first of all, we will have to make several modifications to the file paths. to do this, we will have to enter the following programs and change the path of the input and output file: 
 
 * structure_construct.c
+
 ![](Images/structure.png)
 * algorithm.c (in main_algorithm_SPAIN and weighting_heuristic folders)
+
+
 ![](Images/rest.png)
 * functions_astar_nb (in main_algorithm_SPAIN and weighting_heuristic folders)
+
+
 ![](Images/rest.png)
 
 Once the directories where the input and output files are located have been changed, the execution is carried out in the following way:
