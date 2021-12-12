@@ -12,6 +12,7 @@
 
 
 #define inputfilename "/path_to_the_file:/Spain.bin"
+
 # define pi 3.14159265358979323846
 # define rad_earth 6371.0
 

@@ -11,6 +11,7 @@
 # include "functions_astar_nb.h"
 
 #define number_nodes_SPAIN 23895681
+
 #define inputfilename "/path_to_the_file:/Spain.bin"
 
 int main(){
