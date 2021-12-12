@@ -13,7 +13,7 @@ This proyect has three branches:
 
 ## Execution
 
-first of all, we will have to make several modifications to the file paths. to do this, we will have to enter the following programs and change the path of the input and output file: 
+First of all, we will have to make several modifications to the file paths. to do this, we will have to enter the following programs and change the path of the input and output file: 
 
 * structure_construct.c
 
