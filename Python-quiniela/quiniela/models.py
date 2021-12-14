@@ -2,7 +2,7 @@ import pickle
 
 
 class QuinielaModel:
-
+    
     def train(self, train_data):
         # Do something here to train the model
         pass
