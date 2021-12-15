@@ -1,15 +1,26 @@
+from sklearn.tree import DecisionTreeClassifier
+
 import pickle
 
 
 class QuinielaModel:
     
+    def __init__(self):
+        self.features = ['division','matchday','season_encoded','team_encoded',
+                    'away_team_encoded','GD_home','Pts_difference','home_rank']
+        self.target = ['result_home_encoded']
+        self.classifier = DecisionTreeClassifier(max_depth=7) 
+
+        
     def train(self, train_data):
-        # Do something here to train the model
+        X_train = train_data[self.features]
+        y_train = train_data[self.target]
+        model = self.classifier.fit(X_train, y_train)
         pass
 
     def predict(self, predict_data):
-        # Do something here to predict
-        return ["X" for _ in range(len(predict_data))]
+        
+        return [value for values in range(len(predict_data))]
 
     @classmethod
     def load(cls, filename):
