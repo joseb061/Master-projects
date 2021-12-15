@@ -11,7 +11,7 @@ def load_matchday(season, division, matchday):
     #               AND division = {division}
     #               AND matchday = {matchday}
     #     """, conn)
-    data = pd.read_csv(r'provisional.csv', index_col = 0)
+    data = pd.read_csv(r'Definitive_ML_Data.csv', index_col = 0)
     data = data[(data["season"] == season) & (data["division"] == division) & (data["matchday"] == matchday)]
     if data.empty:
         raise ValueError("There is no matchday data for the values given")
@@ -20,9 +20,9 @@ def load_matchday(season, division, matchday):
 
 def load_historical_data(seasons):
     if seasons == "all":
-        data = pd.read_csv(r'provisional.csv', index_col = 0)
+        data = pd.read_csv(r'Definitive_ML_Data.csv', index_col = 0)
     else:
-        data = pd.read_csv(r'provisional.csv', index_col = 0)
+        data = pd.read_csv(r'Definitive_ML_Data.csv', index_col = 0)
         data = data[data["season"] == seasons]
     if data.empty:
         raise ValueError(f"No data for seasons {seasons}")
