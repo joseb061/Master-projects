@@ -6,7 +6,7 @@ from datetime import datetime
 import settings
 from quiniela import models, io
 
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 
 def parse_seasons(value):
@@ -80,7 +80,7 @@ if __name__ == "__main__":
     if args.task == "train":
         logging.info(f"Training LaQuiniela model with seasons {args.training_seasons}")
         training_data = io.load_historical_data(args.training_seasons)
-        model_name = DecisionTreeClassifier(max_depth=7)
+        model_name = RandomForestClassifier(max_depth=11, n_estimators=11, max_features=3)
         model = models.QuinielaModel(model_name)
         model.train(training_data)
         model.save(settings.MODELS_PATH / args.model_name)
