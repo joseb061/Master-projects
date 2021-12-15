@@ -6,6 +6,8 @@ from datetime import datetime
 import settings
 from quiniela import models, io
 
+from sklearn.tree import DecisionTreeClassifier
+
 
 def parse_seasons(value):
     if value == "all":
@@ -77,18 +79,28 @@ if __name__ == "__main__":
     )
     if args.task == "train":
         logging.info(f"Training LaQuiniela model with seasons {args.training_seasons}")
-        model = models.QuinielaModel()
         training_data = io.load_historical_data(args.training_seasons)
+        model_name = DecisionTreeClassifier(max_depth=7)
+        model = models.QuinielaModel(model_name)
         model.train(training_data)
         model.save(settings.MODELS_PATH / args.model_name)
         print(f"Model succesfully trained and saved in {settings.MODELS_PATH / args.model_name}")
+        
     if args.task == "predict":
         logging.info(f"Predicting matchday {args.matchday} in season {args.season}, division {args.division}")
         model = models.QuinielaModel.load(settings.MODELS_PATH / args.model_name)
+        models.QuinielaModel(model)
         predict_data = io.load_matchday(args.season, args.division, args.matchday)
         predict_data["pred"] = model.predict(predict_data)
         print(f"Matchday {args.matchday} - LaLiga - Division {args.division} - Season {args.season}")
         print("=" * 70)
         for _, row in predict_data.iterrows():
-            print(f"{row['home_team']:^30s} vs {row['away_team']:^30s} --> {row['pred']}")
-        io.save_predictions(predict_data)
+            result = row['pred']
+            if result == 0:
+                result = "2"
+            if result == 1:
+                result = "X"
+            if result == 2:
+                result = "1"
+            print(f"{row['team']:^30s} vs {row['Away_team']:^30s} --> {result}")
+        # io.save_predictions(predict_data)
