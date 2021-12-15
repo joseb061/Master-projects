@@ -7,7 +7,7 @@ Team members:
 
 This repo contains a ML model that predicts the outcome of a matchday in LaLiga (Spanish Football League).
 
-It also contains a ipybb called ```LaLigaDataAnalysis.ipynb``` with all the exercises done from ```DataAnalysisExercises.pdf```.
+It also contains a ipynb called ```LaLigaDataAnalysis.ipynb``` with all the exercises done from ```DataAnalysisExercises.pdf```.
 
 ### Repository structure
 
