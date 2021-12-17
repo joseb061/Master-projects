@@ -1,0 +1,62 @@
+---
+title: "Exercise set 1"
+author: "Joseba Hernandez Bravo and Jorge Vicente Puig"
+date: "17/12/2021"
+output:
+  rmdformats::downcute:
+    self_contained: true
+    thumbnails: true
+    lightbox: true
+    gallery: false
+    highlight: tango
+---
+
+```{r, message = FALSE}
+library(combinat)
+```
+
+In this first task we will examine the correlation between the pairs of (X1,Y1)
+values by means of a correlation test. 
+
+Firstly we will define two different null hypothesis.
+
+- $H_{0}:\rho=0$: There is no correlation between Chest circumference and volume of air
+- $H_{0}:\rho>0$: Chest circumference and volume of air are positively correlated
+
+# $H_{0}:\rho = 0$ 
+
+```{r}
+x= c(39,29,60,40,32)
+y=c(11,5,20,8,6)
+
+sttrue= cor(x,y)
+
+n=length(y)
+nr=fact(n) #number of rearrangements to be examined
+st=numeric(nr)
+
+cnt=0
+d=permn(y)
+
+for (i in 1:nr){
+  st[i]<-cor(d[[i]],x)
+  if (st[i] >=sttrue)
+    cnt=cnt+1 
+}
+```
+
+```{r}
+print(paste("p-value= ",cnt/nr))
+print(paste("Null hypothesis: ", sttrue))
+```
+```{r}
+hist(st)
+abline(v=sttrue,col="blue",lwd=2)
+```
+As the p values is less than the significance lece ($0.05$) we will reject the null
+hypothesis. So, we can say that there is sufficient evidence to conclude that the 
+relationship between X an Y could be linear. 
+# $H_{0}:\rho > 0$ 
+
+
+
