@@ -20,11 +20,11 @@ library(combinat)
 In this first task we will examine the correlation between the pairs of (X1,Y1)
 values by means of a correlation test. 
 
-We will perform and exact test for $H_{0}:\rho=0$ against $H_{1}:\rho>0$ where:
+We will perform an exact test for $H_{0}:\rho=0$ against $H_{1}:\rho>0$ where:
 
-- $H_{0}:\rho=0$: There is no correlation between Chest circumference and volume of air
+- $H_{0}:\rho=0$: There is no correlation between Chest circumference and volume of air.
 
-- $H_{1}:\rho>0$: Chest circumference and volume of air are positively correlated
+- $H_{1}:\rho>0$: Chest circumference and volume of air are positively correlated.
 
 ## Pearson
 
@@ -59,7 +59,7 @@ hist(st)
 abline(v=sttrue,col="blue",lwd=2)
 ```
 
-As the p values is less than$0.05$ we will reject the null
+As the p values is less than $0.05$ we will reject the null
 hypothesis. So, we can say that there is sufficient evidence to conclude that the 
 relationship between X an Y could be linear.$H_{0}:\rho > 0$ 
 
@@ -101,7 +101,132 @@ abline(v=sttrue,col="blue",lwd=2)
 In this case the p-value $= 0.066$ which is slightly greater than $ 0.05$ . Therefore, we can conclude that $H_{0}$ is likely and that we cannot reject it.
 So we can not say that X and Y are correlated in this case. 
 
+
+
+
+
+
+
 # TASK 2
+We have to analyse the increments of weight recorded with the new additive. For that purpose, firstly we will introduce the data in R and look at it.
+```{r}
+data_ex2 <- c(2.5, 3.4, 2.9, 4.1, 5.3, 3.4, 1.9, 3.3, 1.8)
+data_additive_ex2 <- c(3.5, 6.3, 4.2, 4.5, 3.8, 5.7, 4.4)
+
+plot(c(data_ex2, data_additive_ex2), xlab = "Data", ylab ="Weight", main = "Weight of the recorded data")
+abline(v = 9.5, col="red", lwd = 2, lty = 2)
+text(13, 2, "+ Additive", srt=0.2, pos=3)
+```
+Looking at this plot it seems that the weight had grow when using the new additive. Furthermore, we will do an statistical analysis to prove our feelings.
+
+We will do a t-test with 
+\[
+H_0 : \mu_{no_additive} = \mu_{additive}
+\]
+against
+\[
+H_1 : \mu_{no_additive} < \mu_{additive}
+\]
+However, for doing this test we need to check if the variances are equal, so we will first do the following test:
+\[
+H_0 : \frac{\sigma_A^2}{\sigma_B^2} = 1
+\]
+\[
+H_1 : \frac{\sigma_A^2}{\sigma_B^2} \neq 1
+\]
+```{r}
+library(car)
+total_data_ex2 = stack(list(g1=data_ex2, g2=data_additive_ex2))
+leveneTest(values ~ ind, total_data_ex2)
+```
+Notice that our p-value of the test is 0.8374 > 0.05, so we will reject the Null hypothesis and conclude that the variance are not equal. 
+
+Now, we also have to check if the data follows a normal distribution, for that purpose we will do a *Shapiro-Wilk* test:
+```{r}
+shapiro.test(data_ex2)
+```
+```{r}
+shapiro.test(data_additive_ex2)
+```
+On the 2 cases we have that the p-value > 0.05 and then it implies that the distribution of the data are not significantly different from normal distribution. In other words, we can assume the normality.
+
+Finally, we can do the t-test:
+```{r}
+t.test(data_ex2, data_additive_ex2, alternative = "less", var.equal = FALSE)
+```
+Due to the p-value < 0.05, we reject the null hypothesis and we have that $\mu_{no_additive} < \mu_{additive}$.
+
+Now we can perform a permutation test with the T-statistic using the following R command *perm.t.test(x,...)* from the package *MKinfer*,
+```{r}
+library(MKinfer)
+perm.t.test(data_ex2, data_additive_ex2, alternative = "less")
+```
+Notice that we also obtain a p-value < 0.05, so will reject the null hipotesys and accept that $\mu_{no_additive} < \mu_{additive}$.
+
+Furthermore, we can do more permutation test. Due to having data of different size we will use the following idea for doing a permutation test:
+  1. Add two NA values to the additive data and sample the data.
+  2. Delete two element of the data, the ones that correspond to the NA introduced data.
+  3. Do the permutation test.
+  4. Compute an average of the p-values of the permutation tests.
+```{r correlation test}
+iter <- 10
+p_value_count <- 0
+
+for (j in 1:iter){
+  mod_data_additive_ex2 <- c(data_additive_ex2, NA, NA)
+  mod_data_additive_ex2 <- sample(mod_data_additive_ex2)
+  sttrue= cor(data_ex2, mod_data_additive_ex2, use="complete.obs")
+  
+  n=length(mod_data_additive_ex2)
+  nr=fact(n) #number of rearrangements to be examined
+  st=numeric(nr)
+  st <- 0
+  cnt=0
+  d=permn(mod_data_additive_ex2)
+  
+  for (i in 1:nr){
+    st[i]<-cor(d[[i]],data_ex2, use="complete.obs")
+    if (st[i] >=sttrue)
+      cnt=cnt+1
+  }
+  print(paste("p-value= ",cnt/nr))
+  p_value_count <- p_value_count + cnt/nr
+}
+print(paste("p-value= ",p_value_count/iter))
+```
+
+```{r medias test}
+iter <- 10
+p_value_count <- 0
+
+for (j in 1:iter){
+  mod_data_additive_ex2 <- c(data_additive_ex2, NA, NA)
+  mod_data_additive_ex2 <- sample(mod_data_additive_ex2)
+  sttrue= mean(mod_data_additive_ex2, na.rm = TRUE) - mean(data_ex2)
+  
+  n=length(mod_data_additive_ex2)
+  nr=fact(n) #number of rearrangements to be examined
+  st=numeric(nr)
+  st <- 0
+  cnt=0
+  d=permn(mod_data_additive_ex2)
+  
+  for (i in 1:nr){
+    st[i]<-mean(d[[i]], na.rm = TRUE) - mean(data_ex2)
+    if (st[i] >=sttrue)
+      cnt=cnt+1
+  }
+  print(paste("p-value= ",cnt/nr))
+  p_value_count <- p_value_count + cnt/nr
+}
+print(paste("p-value= ",p_value_count/iter))
+```
+
+As we can see, the average p-value is 0.535 > 0.05, so we will reject the null hypothesis and conclude that $\mu_{no_additive} < \mu_{additive}$ as we had concluded with the t-test and the permutation test done before.
+
+Notice that similar test could be carried with different statistics such as Spearman or Pearson.
+
+
 
 
 
