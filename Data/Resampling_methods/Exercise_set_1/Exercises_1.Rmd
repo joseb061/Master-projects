@@ -26,42 +26,11 @@ We will perform an exact test for $H_{0}:\rho=0$ against $H_{1}:\rho>0$ where:
 
 - $H_{1}:\rho>0$: Chest circumference and volume of air are positively correlated.
 
-## Correlation test
-We will perform a permutation correlation test and plot an histogram and the p-value to analyse the results.
-
-```{r}
-x= c(39,29,60,40,32)
-y=c(11,5,20,8,6)
-
-sttrue= cor(x,y)
-
-n=length(y)
-nr=fact(n) #number of rearrangements to be examined
-st=numeric(nr)
-
-cnt=0
-d=permn(y)
-
-for (i in 1:nr){
-  st[i]<-cor(d[[i]],x)
-  if (st[i] >=sttrue)
-    cnt=cnt+1
-}
-```
-
-```{r}
-print(paste("p-value= ",cnt/nr))
-```
-```{r}
-hist(st)
-abline(v=sttrue,col="blue",lwd=2)
-```
-As the p-value is less than $0.05$ we will reject the null hypothesis.
-Then, we can say that there is sufficient evidence to conclude that the X and Y are correlated.
-
-
 ## Pearson
-Now, we will perform the test using a Pearson correlation coefficient in order to have a different statistic for evaluating the null hypothesis.
+
+Firstly we will perform the test using a Pearson correlation coefficient
+
+
 ```{r}
 x= c(39,29,60,40,32)
 y=c(11,5,20,8,6)
@@ -90,12 +59,14 @@ hist(st)
 abline(v=sttrue,col="blue",lwd=2)
 ```
 
-As in the previous case, we have that our p-value $< 0.05$ so, we will reject the null hypothesis. Therefore, we can say that there is sufficient evidence to conclude that the  relationship between X an Y could be linear, i.e. $H_{0}:\rho > 0$, agreeging with the previous case.
+As the p values is less than $0.05$ we will reject the null
+hypothesis. So, we can say that there is sufficient evidence to conclude that the 
+relationship between X an Y could be linear.$H_{0}:\rho > 0$ 
 
 
 ## Spearman
 
-Finally, will now follow the same strategy but using Spearman's correlation
+We will now follow the same strategy but using Spearman's correlation
 coefficient instead of Pearson's. 
 
 ```{r}
@@ -127,10 +98,8 @@ hist(st)
 abline(v=sttrue,col="blue",lwd=2)
 ```
 
-In this case the p-value $= 0.066$ which is slightly greater than $ 0.05$ . Therefore, using the Spearman's statistic we could have concluded that $H_{0}$ is likely and that we cannot reject it, however, the p-value is quite low and the other statistics rejected the null hypothesis.
-
-In conclusion, even thought the null hypothesis will be rejected using Spearman's statistic we can conclude due to the other permutations tests that X and Y are correlated.
-
+In this case the p-value $= 0.066$ which is slightly greater than $ 0.05$ . Therefore, we can conclude that $H_{0}$ is likely and that we cannot reject it.
+So we can not say that X and Y are correlated in this case. 
 
 
 
@@ -169,7 +138,7 @@ library(car)
 total_data_ex2 = stack(list(g1=data_ex2, g2=data_additive_ex2))
 leveneTest(values ~ ind, total_data_ex2)
 ```
-Notice that our p-value of the test is 0.8374 > 0.05, so we will accept the Null hypothesis and conclude that the variance are equal. 
+Notice that our p-value of the test is 0.8374 > 0.05, so we will reject the Null hypothesis and conclude that the variance are not equal. 
 
 Now, we also have to check if the data follows a normal distribution, for that purpose we will do a *Shapiro-Wilk* test:
 ```{r}
@@ -182,7 +151,7 @@ On the 2 cases we have that the p-value > 0.05 and then it implies that the dist
 
 Finally, we can do the t-test:
 ```{r}
-t.test(data_ex2, data_additive_ex2, alternative = "less")
+t.test(data_ex2, data_additive_ex2, alternative = "less", var.equal = FALSE)
 ```
 Due to the p-value < 0.05, we reject the null hypothesis and we have that $\mu_{no_additive} < \mu_{additive}$.
 
@@ -252,9 +221,12 @@ for (j in 1:iter){
 print(paste("p-value= ",p_value_count/iter))
 ```
 
-As we can see, the average p-value for both test is greater than0.05, so we will reject the null hypothesis and conclude that in one case that are correlated and in the other that $\mu_{no_additive} < \mu_{additive}$ as we had concluded with the t-test and the permutation test done before.
+As we can see, the average p-value is 0.535 > 0.05, so we will reject the null hypothesis and conclude that $\mu_{no_additive} < \mu_{additive}$ as we had concluded with the t-test and the permutation test done before.
 
 Notice that similar test could be carried with different statistics such as Spearman or Pearson.
+
+
+
 
 
 # TASK 3
@@ -331,5 +303,4 @@ As we can observe in the case of the variable *TMG*, the p-value is greater than
 
 On the other hand, the variable "TEMP" does present a p-value lower than 0.05. Therefore, we can discard the null hypothesis and we can state that there is a correlation between the two variables.  
 
-Notice that this results agree with the ones obtained with the regression model. Indeed, we have seen in the regression model that the variable *TEMP* is more significant than *TMG*, and using the correlation tests we also notice that *TEMP* is correlated with *WC* which support the results from the regression model.
 
