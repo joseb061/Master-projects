@@ -33,7 +33,7 @@ quiniela/
 
 ### How to run it
 
-Once you've installed dependences (```pip install -r requirements.txt```), which is only Pandas in this dummy case, you can try it yourself:
+Once you've installed dependences (```pip install -r requirements.txt```), you can try it yourself:
 
 ```console
 foo@bar:~$ python cli.py train --training_seasons 2010:2020
