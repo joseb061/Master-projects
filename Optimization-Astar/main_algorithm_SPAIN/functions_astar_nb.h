@@ -99,7 +99,7 @@ unsigned binarysearch(long unsigned int ident, node l[],int n){
     }
 }
 
-/* -------------------------------------- Functions for computing the weights ----------------------------- */
+/* -------------- Functions for computing the weights --------------------- */
 double deg2rad(double deg) {
   return (deg * pi / 180);
 }
