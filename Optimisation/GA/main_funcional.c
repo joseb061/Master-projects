@@ -3,7 +3,6 @@
 #include <string.h>
 #include "functions.h"
 
-
 #define POP_SIZE 100 // number of chromosomes.
 #define MAXGENS 20   // number of iterations.
 #define nYears 12
@@ -17,7 +16,7 @@ int main()
     unsigned long child1, child2;
     int i, j, k, best_index;
 
-    if ((sol_save_txt = fopen ("results/fitnes_resuts.txt", "w")) == NULL)
+    if ((sol_save_txt = fopen ("results/fitness_results.txt", "w")) == NULL)
         ExitError("the output binary data file cannot be opened", 31);
     
     if ((sol_save_params = fopen ("results/params_resuts.txt", "w")) == NULL)
@@ -29,8 +28,7 @@ int main()
     fill_random_chromo(chromosome, POP_SIZE);
     for (k = 0; k < 5000; k++){
 
-        keep = 8;
-     
+       keep = 8;     
         Geno_to_pheno(pheno_params, chromosome, POP_SIZE);
         for (i = 0; i < POP_SIZE; i++){
             Generate_EDO_Prediction(chromosome[i].predicted_values,
