@@ -2,7 +2,7 @@
 
 In this work we have tested the hypothesis that Andouine’s migration occurs with social copying
 using a genetic algorithm. The genetic algorithm has been designed for the minimisation of the
-fitness value defined in the first section and has given us a minimum result of 1.8M.
+fitness value defined in the first section of the report and has given us a minimum result of 1.8M.
 
 ![](Plots/years_fitnes.png)
 ## Content
@@ -13,9 +13,9 @@ The repository contains all the material necessary for the operation of the algo
 
 * EDO_solver: extension to resolve and calculate the results of the differential equation. Requires the program "rk78/RKF78.c" which is inside the rk78 folder.
 
-*functions.h: contains all the necessary functions to generate the initial population and to generate the new populations.
+* functions.h: contains all the necessary functions to generate the initial population and to generate the new populations.
 
-*main_functional.c : contains the main algorithm. From this program the rest of the extensions are called.
+* main_functional.c : contains the main algorithm. From this program the rest of the extensions are called.
 
 ## Execution
 
