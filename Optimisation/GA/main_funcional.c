@@ -4,8 +4,15 @@
 #include "functions.h"
 
 #define POP_SIZE 100 // number of chromosomes.
-#define MAXGENS 20   // number of iterations.
+#define MAXGENS 5000   // number of iterations.
+
+
 #define nYears 12
+
+#define outputresults "results/fitnes_resuts.txt"
+#define outputparams "results/params_resuts.txt"
+#define outputyears "results/years_resuts.txt"
+
 
 int main()
 {
@@ -16,17 +23,17 @@ int main()
     unsigned long child1, child2;
     int i, j, k, best_index;
 
-    if ((sol_save_txt = fopen ("results/fitness_results.txt", "w")) == NULL)
+    if ((sol_save_txt = fopen (outputresults, "w")) == NULL)
         ExitError("the output binary data file cannot be opened", 31);
     
-    if ((sol_save_params = fopen ("results/params_resuts.txt", "w")) == NULL)
+    if ((sol_save_params = fopen (outputparams, "w")) == NULL)
         ExitError("the output binary data file cannot be opened", 31);
     
-    if ((sol_save_years = fopen ("results/years_resuts.txt", "w")) == NULL)
+    if ((sol_save_years = fopen (outputyears, "w")) == NULL)
         ExitError("the output binary data file cannot be opened", 31);
 
     fill_random_chromo(chromosome, POP_SIZE);
-    for (k = 0; k < 5000; k++){
+    for (k = 0; k < MAXGENS; k++){
 
        keep = 8;     
         Geno_to_pheno(pheno_params, chromosome, POP_SIZE);

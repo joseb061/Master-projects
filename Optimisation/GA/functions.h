@@ -18,7 +18,6 @@
 #define sigma_value 17
 #define delta_value 15
 #define POP_SIZE 100 // number of chromosomes.
-#define MAXGENS 20   // number of iterations.
 #define nYears 12
 
 const double real[] = {15329., 14177., 13031., 9762, 11271, 8688., 7571., 6983., 4778., 2067., 1586., 793.};
