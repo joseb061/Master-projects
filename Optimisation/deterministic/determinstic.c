@@ -113,12 +113,12 @@ int main(){
     double sigma, rho;
 
     // Real initial point. 
-    //x[0] = -1.5;
-    //x[1] = -1;
+    x[0] = -1.5;
+    x[1] = -1;
 
     // Arbitrary initial point.
-    x[0] = 3.5;
-    x[1] = 1.3;
+    // x[0] = 3.5;
+    // x[1] = 1.3;
 
     epsilonR = directionGradient(x,jacobian,d);
     

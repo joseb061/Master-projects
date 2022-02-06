@@ -1,0 +1,9 @@
+!! Important to change the paths for saving the output files !!
+
+- Executing main program: depending on the algorithm you want to run, 
+            uncomment the code below the name of each one. The last part of the program 
+            is simply to make an analysis using different
+            sigma and ro values. IT IS NOT NECESSARY TO RUN ! 
+
+            gcc deterministic.c -o out.exe
+             
