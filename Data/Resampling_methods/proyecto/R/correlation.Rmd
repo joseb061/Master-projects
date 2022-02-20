@@ -20,103 +20,24 @@ library(combinat)
 library(GGally)
 ```
 ```{r}
-# df <- read.csv(file ='/home/joseba/Master/Master-git/DataVis/Resampling Methods/proyecto/data_waves/first/madrid_first.csv')
-# casos <- df$num_casos
-# temperatura <- df$tmed
-# precip <- df$prec
-```
+df <- read.csv(file ='/home/joseba/Master/Master-git/DataVis/Resampling Methods/proyecto/data_waves/fourth/madrid_fourth.csv')
 
-We are going to use Spearman
-tests.
+casos <- df$num_casos
+temperatura <- df$tmed
+precip <- df$prec
+statistical_column <- c("num_casos","tmed","wind","prec")
 
-The main reason for using non-parametric statistical
-tests is that compared with parametric statistical tests, are thought
-to be more suitable for non- normally distributed data, which are
-frequently involved in time serises air pollution and climate vari-
-ables. In order to use no-parametric rank correlation Spearman
-tests, were applied the Kolmogorov-Smirnov Tests of Normality
-for time-series data sets, that provided very good evidence that the
-considered time-series data were not normally distributed.
+print (ks.test(df$num_casos, "pnorm", mean=mean(df$num_casos), sd=sd(df$num_casos)))
+print (ks.test(df$tmed, "pnorm", mean=mean(df$tmed), sd=sd(df$tmed)))
+print (ks.test(df$wind, "pnorm", mean=mean(df$wind), sd=sd(df$wind)))
+print (ks.test(df$prec, "pnorm", mean=mean(df$prec), sd=sd(df$prec)))
 
-
-The null hypothesis of the K-S test is that the distribution is normal.
-Therefore, if p-value of the test is >0.05, we do not reject the null hypothesis and conclude that the distribution in question is not statistically different from a normal distribution.
-
-```{r}
-# statistical_column <- c("num_casos","tmed","wind","prec")
-
-# print (ks.test(df$num_casos, "pnorm", mean=mean(df$num_casos), sd=sd(df$num_casos)))
-# print (ks.test(df$tmed, "pnorm", mean=mean(df$tmed), sd=sd(df$tmed)))
-# print (ks.test(df$wind, "pnorm", mean=mean(df$wind), sd=sd(df$wind)))
-# print (ks.test(df$prec, "pnorm", mean=mean(df$prec), sd=sd(df$prec)))
-
-provinces <- c('alava', 'albacete', 'alicante', 'almeria', 'asturias', 'avila',
-       'badajoz', 'baleares', 'barcelona', 'bizkaia', 'burgos', 'caceres',
-       'cadiz', 'cantabria', 'castellon', 'ceuta', 'ciudadReal', 'cordoba',
-       'coruña', 'cuenca', 'gipuzkoa', 'girona', 'granada', 'guadalajara',
-       'huelva', 'huesca', 'jaen', 'laRioja', 'lasPalmas', 'leon', 'lleida',
-       'lugo', 'madrid', 'malaga', 'melilla', 'murcia', 'navarra', 'ourense',
-       'palencia', 'pontevedra', 'salamanca', 'santaCruzDeTenerife', 'segovia',
-       'sevilla', 'soria', 'tarragona', 'teruel', 'toledo', 'valencia',
-       'valladolid', 'zamora', 'zaragoza')
-waves <- c("first","second","third","fourth","fifth")
-path0 <- "/home/joseba/Master/Master-git/DataVis/Resampling Methods/proyecto/data_waves"
-
-provincias_vec <- c()
-wave_vec <- c()
-D_vec <- c()
-p_value_vec <- c()
-
-
-for (wave in waves){
-  path <- paste0(path0,"/",wave)
-  for (province in provinces){
-    path <- paste0(path,"/",province,"_",wave,".csv")
-    df <- read.csv(file = path)
-    
-    casos <- df$num_casos
-    temperatura <- df$tmed
-    precip <- df$prec
-    
-
-    ks.test(casos, "pnorm", mean=mean(casos), sd=sd(casos))
-    ks.test(temperatura, "pnorm", mean=mean(temperatura), sd=sd(temperatura))
-    ks.test(precip, "pnorm", mean=mean(precip), sd=sd(precip))
-    
-
-
-    # sttrue= cor.test(casos,temperatura, method = "spearman", exact=FALSE)
-    # path <- paste0(path0,"/",wave)
-    
-    # #fill vectors
-    # provincias_vec <- append(provincias_vec, province, after = length(provincias_vec))
-    # wave_vec<-append(wave_vec, wave, after = length(wave_vec))
-    # correlation_vec<-append(correlation_vec, sttrue[[4]], after = length(correlation_vec))
-    # p_value_vec<-append(p_value_vec, sttrue[[3]], after = length(p_value_vec))
-    # temperature_vec <- append(temperature_vec, mean(temperatura), after= length(temperature_vec))
-    
-    }
-}
-
-# DataFrame.correlations <- data.frame(provincias_vec,wave_vec,
-#                                      correlation_vec,p_value_vec,temperature_vec)   
+hist(df$num_casos)
 
 ```
-Therefore, as the p-value for the S-K test is smaller than 0.05
-in all the cases, we can reject the null hypothesis and therefore, we can conclude
-that the  distribution in question is statistically different from a normal distribution.
-
 
 Now we can calculate the spearman correlation test:
 
-```{r cars}
-sttrue= cor.test(casos,temperatura, method = "spearman", exact=FALSE)
-#print(paste0("p-value: ",sttrue[3]," correlation: ",sttrue[4]))
-print(sttrue[[4]])
-```
-
-
-
 ```{r}
 provinces <- c('alava', 'albacete', 'alicante', 'almeria', 'asturias', 'avila',
        'badajoz', 'baleares', 'barcelona', 'bizkaia', 'burgos', 'caceres',
@@ -133,8 +54,16 @@ path0 <- "/home/joseba/Master/Master-git/DataVis/Resampling Methods/proyecto/dat
 
 provincias_vec <- c()
 wave_vec <- c()
-correlation_vec <- c()
-p_value_vec <- c()
+
+correlation_vec_temp <- c()
+p_value_vec_temp <- c()
+
+correlation_vec_wind <- c()
+p_value_vec_wind <- c()
+
+correlation_vec_prec <- c()
+p_value_vec_prec <- c()
+
 temperature_vec <- c()
 
 for (wave in waves){
@@ -145,55 +74,61 @@ for (wave in waves){
     
     casos <- df$num_casos
     temperatura <- df$tmed
+    viento <- df$wind
     precip <- df$prec
-    
-    sttrue= cor.test(casos,temperatura, method = "spearman", exact=FALSE)
+   
     path <- paste0(path0,"/",wave)
     
     #fill vectors
     provincias_vec <- append(provincias_vec, province, after = length(provincias_vec))
     wave_vec<-append(wave_vec, wave, after = length(wave_vec))
-    correlation_vec<-append(correlation_vec, sttrue[[4]], after = length(correlation_vec))
-    p_value_vec<-append(p_value_vec, sttrue[[3]], after = length(p_value_vec))
-    temperature_vec <- append(temperature_vec, mean(temperatura), after= length(temperature_vec))
+    
+    #temp 
+    sttrue= cor.test(casos,temperatura, method = "spearman", exact=FALSE)
+    correlation_vec_temp<-append(correlation_vec_temp, sttrue[[4]], after = length(correlation_vec_temp))
+    p_value_vec_temp<-append(p_value_vec_temp, sttrue[[3]], after = length(p_value_vec_temp))
 
+    #wind
+    sttrue= cor.test(casos,viento, method = "spearman", exact=FALSE)
+    correlation_vec_wind<-append(correlation_vec_wind, sttrue[[4]], after = length(correlation_vec_wind))
+    p_value_vec_wind<-append(p_value_vec_wind, sttrue[[3]], after = length(p_value_vec_wind))
+
+    #prec
+    sttrue= cor.test(casos,precip, method = "spearman", exact=FALSE)
+    correlation_vec_prec<-append(correlation_vec_prec, sttrue[[4]], after = length(correlation_vec_prec))
+    p_value_vec_prec<-append(p_value_vec_prec, sttrue[[3]], after = length(p_value_vec_prec))
     
     }
 }
 
 DataFrame.correlations <- data.frame(provincias_vec,wave_vec,
-                                     correlation_vec,p_value_vec,temperature_vec)    
+                                      correlation_vec_temp,p_value_vec_temp,correlation_vec_wind,p_value_vec_wind, correlation_vec_prec,p_value_vec_prec)    
 
+write.csv(DataFrame.correlations,"/home/joseba/Master/Master-git/DataVis/Resampling Methods/proyecto/R/Spearman.csv", row.names = FALSE)
 ```
-
-## Correlation matrix Plot
-
-```{r pressure, echo=FALSE}
-ggcorr(df, method = c("pairwise", "spearman"),
-  nbreaks = NULL, digits = 2, low = "#3B9AB2",
-  mid = "#EEEEEE", high = "#F21A00",
-  geom = "tile", label = TRUE,
-  label_alpha = FALSE)
-```
+## Correlation Plot
 
 ```{r}
-path <- '/home/joseba/Master/Master-git/DataVis/Resampling Methods/proyecto/data_waves/fourth/malaga_fourth.csv'
+
+path <- '/home/joseba/Master/Master-git/DataVis/Resampling Methods/proyecto/data_waves/second/jaen_second.csv'
 df <- read.csv(file = path)
 
 casos <- df$num_casos
 temperatura <- df$tmed
 precip <- df$prec
+viento <- df$wind
 
-fit1 <- lm(casos ~ temperatura, data = df)
+
+fit1 <- lm(casos ~ temperatura + precip + viento, data = df)
 summary(fit1)
 ```
 
 ```{r}
 library(ggplot2)
 
-ggplot(df, aes(x = temperatura, y = casos)) + 
+ggplot(df, aes(x = temperatura + precip + viento, y = casos)) + 
+
   geom_point() +
   stat_smooth(method = "lm", col = "blue")
 ```
-
 
